@@ -16,8 +16,9 @@ services:
       MYSQL_DATABASE: shupple
       MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: shupple
+      MYSQL_PASSWORD: shupple
     ports: 
-      - "3314:3306"
+      - "3314:3314"
     volumes:
       - ./docker/db/conf.d:/etc/mysql/conf.d
       - ./log/mysql:/var/log/mysql

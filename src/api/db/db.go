@@ -2,13 +2,14 @@ package db
 
 import (
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 func DBConnect() *gorm.DB {
 	DBMS := "mysql"
 	USER := "root"
 	PASS := "shupple"
-	PROTOCOL := "tcp(localhost:3306)"
+	PROTOCOL := "tcp(db:3314)"
 	DBNAME := "shupple"
 	CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?parseTime=true"
 	db, err := gorm.Open(DBMS, CONNECT)
