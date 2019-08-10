@@ -7,7 +7,7 @@ import (
 func DBConnect() *gorm.DB {
 	DBMS := "mysql"
 	USER := "root"
-	PASS := ""
+	PASS := "shupple"
 	PROTOCOL := "tcp(localhost:3306)"
 	DBNAME := "shupple"
 	CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?parseTime=true"
