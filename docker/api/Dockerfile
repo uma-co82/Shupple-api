@@ -1,6 +1,5 @@
 FROM golang:latest
 
-# ディレクトリ構成は今後変更の可能性あり
 COPY src/api /go/src/api
 
 WORKDIR /go/src/api/
