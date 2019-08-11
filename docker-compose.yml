@@ -14,7 +14,7 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: shupple
-      MYSQL_USER: root
+      MYSQL_USER: shupple
       MYSQL_ROOT_PASSWORD: shupple
       MYSQL_PASSWORD: shupple
     ports: 
