@@ -8,6 +8,8 @@ services:
       - "8080:8080"
     volumes:
       - ./src/api:/go/src/api
+    networks:
+      - shupple
   db:
     build: ./docker/db
     image: mysql:5.7
@@ -18,7 +20,12 @@ services:
       MYSQL_ROOT_PASSWORD: shupple
       MYSQL_PASSWORD: shupple
     ports: 
-      - "3314:3314"
+      - "3306:3306"
     volumes:
       - ./docker/db/conf.d:/etc/mysql/conf.d
       - ./log/mysql:/var/log/mysql
+    networks:
+      - shupple
+networks:
+  shupple:
+    external: true

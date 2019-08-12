@@ -9,7 +9,7 @@ func DBConnect() *gorm.DB {
 	DBMS := "mysql"
 	USER := "shupple"
 	PASS := "shupple"
-	PROTOCOL := "tcp(db:3314)"
+	PROTOCOL := "tcp(db:3306)"
 	DBNAME := "shupple"
 	CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?parseTime=true"
 	db, err := gorm.Open(DBMS, CONNECT)
