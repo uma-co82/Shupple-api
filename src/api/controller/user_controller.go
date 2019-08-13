@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 	"github.com/holefillingco-ltd/Shupple-api/src/api/service"
 )
 
-type Controller struct{}
+type UserController struct{}
 
-func (controller Controller) Index(c *gin.Context) {
+func (usercontroller UserController) Index(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.GetAll()
 
@@ -21,7 +21,7 @@ func (controller Controller) Index(c *gin.Context) {
 	}
 }
 
-func (controller Controller) Create(c *gin.Context) {
+func (usercontroller UserController) Create(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.CreateUser(c)
 
