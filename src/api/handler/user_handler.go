@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"../model"
+	"github.com/holefillingco-ltd/Shupple-api/src/api/model"
 	"github.com/jinzhu/gorm"
 )
 
