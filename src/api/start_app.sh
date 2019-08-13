@@ -1,7 +1,7 @@
 # !/bin/bash
 
-# MySQLサーバーが起動するまでmain.goを実行せずにループで待機する
 echo 'waiting for mysqld to be connectable...'
+# MySQLサーバーが起動するまで待機する
 sleep 4
 
 echo "app is starting...!"
