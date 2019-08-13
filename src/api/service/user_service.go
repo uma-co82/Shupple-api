@@ -6,11 +6,11 @@ import (
 	"github.com/holefillingco-ltd/Shupple-api/src/api/model"
 )
 
-type Service struct{}
+type UserService struct{}
 
 type User model.User
 
-func (s Service) GetAll() ([]User, error) {
+func (s UserService) GetAll() ([]User, error) {
 	db := db.GetDB()
 	var users []User
 
@@ -21,7 +21,7 @@ func (s Service) GetAll() ([]User, error) {
 	return users, nil
 }
 
-func (s Service) CreateUser(c *gin.Context) (User, error) {
+func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var user User
 
