@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/holefillingco-ltd/Shupple-api/src/api/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -21,8 +22,13 @@ func Init() {
 	if err != nil {
 		panic(err.Error())
 	}
+	autoMigration()
 }
 
 func GetDB() *gorm.DB {
 	return db
+}
+
+func autoMigration() {
+	db.AutoMigrate(&model.User{})
 }
