@@ -1,6 +1,8 @@
 version: '3'
 services:
   api:
+    links:
+      - mysql
     build: 
       context: .
       dockerfile: ./docker/api/Dockerfile
@@ -8,24 +10,17 @@ services:
       - "8080:8080"
     volumes:
       - ./src/api:/go/src/api
-    networks:
-      - shupple
-  db:
+  mysql:
     build: ./docker/db
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: shupple
-      MYSQL_USER: shupple
+      MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: shupple
-      MYSQL_PASSWORD: shupple
+      MYSQL_DATABASE: shupple
+    hostname: mysql
     ports: 
       - "3306:3306"
     volumes:
       - ./docker/db/conf.d:/etc/mysql/conf.d
       - ./log/mysql:/var/log/mysql
-    networks:
-      - shupple
-networks:
-  shupple:
-    external: true
