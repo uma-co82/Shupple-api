@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 )
 
@@ -24,13 +23,6 @@ type PostUser struct {
 	Sex      string    `json:"sex"`
 	Hobby    string    `json:"hobby"`
 	BirthDay time.Time `json:"birthDay"`
-}
-
-// ここから下のやつ全部メソッドにする
-func GetUUID() string {
-	u, _ := uuid.NewRandom()
-	uu := u.String()
-	return uu
 }
 
 // 引数にとったTimeから年齢を算出

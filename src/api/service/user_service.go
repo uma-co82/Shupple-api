@@ -6,12 +6,19 @@ import (
 	"../db"
 	"../model"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type UserService struct{}
 
 type PostUser model.PostUser
 type User model.User
+
+func (user *User) GetUUID() {
+	u, _ := uuid.NewRandom()
+	uu := u.String()
+	user.UID = uu
+}
 
 // MEMO: テスト用確認できたら消して良い
 func (s UserService) GetAll() ([]User, error) {
@@ -35,7 +42,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	}
 
 	// TODO: メソッドにする
-	user.UID = model.GetUUID()
+	user.GetUUID()
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
 	user.Hobby = postUser.Hobby
