@@ -1,8 +1,8 @@
 package server
 
 import (
+	"../controller"
 	"github.com/gin-gonic/gin"
-	"github.com/holefillingco-ltd/Shupple-api/src/api/controller"
 )
 
 func Init() {

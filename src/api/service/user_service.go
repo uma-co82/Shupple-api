@@ -10,6 +10,7 @@ import (
 
 type UserService struct{}
 
+type PostUser model.PostUser
 type User model.User
 
 // MEMO: テスト用確認できたら消して良い
@@ -26,15 +27,22 @@ func (s UserService) GetAll() ([]User, error) {
 
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
+	var postUser PostUser
 	var user User
 
-	if err := c.BindJSON(&user); err != nil {
-		fmt.Println("BindJSONError")
-		fmt.Printf("%v", err)
-		return user, err
+	// TODO: Bind出来なかった時のエラーハンドリング
+	if err := c.BindJSON(&postUser); err != nil {
 	}
 
+	user.UID = model.GetUUID()
+	user.NickName = postUser.NickName
+	user.Sex = postUser.Sex
+	user.Hobby = postUser.Hobby
+	user.Age, _ = model.CalcAge(postUser.BirthDay)
+
 	if err := db.Create(&user).Error; err != nil {
+		fmt.Println("DBError")
+		fmt.Printf("%v", err)
 		return user, err
 	}
 
