@@ -1,11 +1,16 @@
 package model
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 type User struct {
 	gorm.Model
-	NickName string `json:"nickName"`
+	UID      string    `json:"uid"`
+	NickName string    `json:"nickName"`
+	Sex      string    `json:"sex"`
+	Hobby    string    `json:"hobby"`
+	BirthDay time.Time `json:"birthDay"`
 }
