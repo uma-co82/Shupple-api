@@ -10,4 +10,5 @@ type User struct {
 	NickName string `json:"nickName"`
 	Sex      string `json:"sex"`
 	Hobby    string `json:"hobby"`
+	BirthDay string `json:"birthDay"`
 }
