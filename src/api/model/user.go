@@ -26,6 +26,7 @@ type PostUser struct {
 	BirthDay time.Time `json:"birthDay"`
 }
 
+// UID作成
 func GetUUID() string {
 	u, _ := uuid.NewRandom()
 	uu := u.String()

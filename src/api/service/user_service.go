@@ -34,6 +34,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	if err := c.BindJSON(&postUser); err != nil {
 	}
 
+	// HACK: ここを別で切り出し
 	user.UID = model.GetUUID()
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
