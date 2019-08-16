@@ -20,7 +20,7 @@ type User struct {
 
 // POSTされた値を受け取る為の構造体
 type PostUser struct {
-	NickName string    `json:"uid"`
+	NickName string    `json:"nickName"`
 	Sex      string    `json:"sex"`
 	Hobby    string    `json:"hobby"`
 	BirthDay time.Time `json:"birthDay"`
