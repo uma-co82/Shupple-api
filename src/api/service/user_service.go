@@ -1,9 +1,11 @@
 package service
 
 import (
+	"fmt"
+
+	"../db"
+	"../model"
 	"github.com/gin-gonic/gin"
-	"github.com/holefillingco-ltd/Shupple-api/src/api/db"
-	"github.com/holefillingco-ltd/Shupple-api/src/api/model"
 )
 
 type UserService struct{}
@@ -27,6 +29,8 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	var user User
 
 	if err := c.BindJSON(&user); err != nil {
+		fmt.Println("BindJSONError")
+		fmt.Printf("%v", err)
 		return user, err
 	}
 

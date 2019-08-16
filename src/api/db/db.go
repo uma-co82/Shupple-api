@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/holefillingco-ltd/Shupple-api/src/api/model"
+	"../model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )

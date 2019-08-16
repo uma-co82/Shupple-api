@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/holefillingco-ltd/Shupple-api/src/api/db"
-	"github.com/holefillingco-ltd/Shupple-api/src/api/server"
+	"./db"
+	"./server"
 )
 
 func main() {

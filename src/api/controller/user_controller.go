@@ -3,8 +3,8 @@ package controller
 import (
 	"fmt"
 
+	"../service"
 	"github.com/gin-gonic/gin"
-	"github.com/holefillingco-ltd/Shupple-api/src/api/service"
 )
 
 type UserController struct{}
