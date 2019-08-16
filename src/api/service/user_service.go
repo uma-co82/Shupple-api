@@ -10,6 +10,7 @@ type UserService struct{}
 
 type User model.User
 
+// MEMO: テスト用確認できたら消して良い
 func (s UserService) GetAll() ([]User, error) {
 	db := db.GetDB()
 	var users []User
