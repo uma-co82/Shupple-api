@@ -3,7 +3,7 @@ services:
   api:
     links:
       - mysql
-    build: 
+    build:
       context: .
       dockerfile: ./docker/api/Dockerfile
     ports:
@@ -19,7 +19,7 @@ services:
       MYSQL_ROOT_PASSWORD: shupple
       MYSQL_DATABASE: shupple
     hostname: mysql
-    ports: 
+    ports:
       - "3306:3306"
     volumes:
       - ./docker/db/conf.d:/etc/mysql/conf.d
