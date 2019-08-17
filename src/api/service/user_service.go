@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"math/rand"
 	"strconv"
 	"time"
 
@@ -46,6 +47,13 @@ func (user *User) calcAge(t time.Time) {
 	user.Age = age
 }
 
+// ランダム取得
+func getRandUser(u []User) User {
+	rand.Seed(time.Now().UnixNano())
+	i := rand.Intn(len(u))
+	return u[i]
+}
+
 // MEMO: テスト用確認できたら消して良い
 func (s UserService) GetAll() ([]User, error) {
 	db := db.GetDB()
@@ -65,6 +73,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 
 	// TODO: Bind出来なかった時のエラーハンドリング
 	if err := c.BindJSON(&postUser); err != nil {
+		fmt.Printf("Binding Error %v", err)
 		return user, err
 	}
 
@@ -75,8 +84,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	user.Hobby = postUser.Hobby
 
 	if err := db.Create(&user).Error; err != nil {
-		fmt.Println("DBError")
-		fmt.Printf("%v", err)
+		fmt.Printf("DB Error %v", err)
 		return user, err
 	}
 
