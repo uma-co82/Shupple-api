@@ -33,10 +33,12 @@ func (user *User) calcAge(t time.Time) {
 	// 日付文字列をそのまま数値化
 	nowInt, err := strconv.Atoi(now)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	birthdayInt, err := strconv.Atoi(birthday)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
@@ -63,6 +65,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 
 	// TODO: Bind出来なかった時のエラーハンドリング
 	if err := c.BindJSON(&postUser); err != nil {
+		return user, err
 	}
 
 	user.getUUID()
