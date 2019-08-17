@@ -57,6 +57,9 @@ func (user *User) calcAge(t time.Time) {
 
 // ランダム取得
 func getRandUser(u []User) User {
+	if u == nil {
+		return User{}
+	}
 	rand.Seed(time.Now().UnixNano())
 	i := rand.Intn(len(u))
 	return u[i]
@@ -85,6 +88,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	}
 	fmt.Println(users)
 
+	// WARN: usersがnullの時エラる
 	opponent := getRandUser(users)
 
 	return opponent, nil
@@ -108,6 +112,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	user.Sex = postUser.Sex
 	user.Hobby = postUser.Hobby
 	user.BirthDay = postUser.BirthDay
+	user.Residence = postUser.Residence
 
 	if err := db.Create(&user).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
