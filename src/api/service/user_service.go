@@ -75,11 +75,15 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		return user, err
 	}
 
+	fmt.Println(user)
+
 	opponentSex := user.opponentSex()
+	fmt.Println(opponentSex)
 
 	if err := db.Find(&users, "sex=?", opponentSex).Error; err != nil {
 		return user, err
 	}
+	fmt.Println(users)
 
 	opponent := getRandUser(users)
 
