@@ -11,7 +11,7 @@ type UserController struct{}
 
 func (usercontroller UserController) Index(c *gin.Context) {
 	var userService service.UserService
-	p, err := userService.GetAll()
+	p, err := userService.GetOpponent()
 
 	if err != nil {
 		c.AbortWithStatus(404)

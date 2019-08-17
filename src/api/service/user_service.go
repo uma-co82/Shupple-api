@@ -9,7 +9,6 @@ import (
 	"../db"
 	"../model"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type UserService struct{}
@@ -17,13 +16,14 @@ type UserService struct{}
 type PostUser model.PostUser
 type User model.User
 
-func (user *User) getUUID() {
-	u, _ := uuid.NewRandom()
-	uu := u.String()
-	user.UID = uu
-}
+type Sex int
 
-// TODO: エラーハンドリングのやり方が分からん
+const (
+	Male Sex = iota
+	Female
+)
+
+// TODO: エラーハンドリング
 // 引数にとったTimeから年齢を算出
 func (user *User) calcAge(t time.Time) {
 	dateFormatOnlyNumber := "20060102" // YYYYMMDD
@@ -54,12 +54,11 @@ func getRandUser(u []User) User {
 	return u[i]
 }
 
-// MEMO: テスト用確認できたら消して良い
-func (s UserService) GetAll() ([]User, error) {
+func (s UserService) GetOpponent() ([]User, error) {
 	db := db.GetDB()
 	var users []User
 
-	if err := db.Find(&users).Error; err != nil {
+	if err := db.Find(&users, "sex=?", "男性").Error; err != nil {
 		return nil, err
 	}
 
@@ -77,11 +76,13 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		return user, err
 	}
 
-	user.getUUID()
+	// Firebase UID
+	user.UID = postUser.UID
 	user.calcAge(postUser.BirthDay)
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
 	user.Hobby = postUser.Hobby
+	user.BirthDay = postUser.BirthDay
 
 	if err := db.Create(&user).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
