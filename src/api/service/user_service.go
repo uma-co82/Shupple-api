@@ -16,12 +16,20 @@ type UserService struct{}
 type PostUser model.PostUser
 type User model.User
 
-type Sex int
+type UID struct {
+	uid string `json:"uid"`
+}
 
-const (
-	Male Sex = iota
-	Female
-)
+func (user *User) opponentSex() int {
+	switch user.Sex {
+	case 0:
+		return 1
+	case 1:
+		return 0
+	default:
+		return 0
+	}
+}
 
 // TODO: エラーハンドリング
 // 引数にとったTimeから年齢を算出
@@ -54,15 +62,28 @@ func getRandUser(u []User) User {
 	return u[i]
 }
 
-func (s UserService) GetOpponent() ([]User, error) {
+func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var users []User
+	var user User
 
-	if err := db.Find(&users, "sex=?", "男性").Error; err != nil {
-		return nil, err
+	uid := c.Request.Header.Get("uid")
+
+	user.UID = uid
+
+	if err := db.First(&user).Error; err != nil {
+		return user, err
 	}
 
-	return users, nil
+	opponentSex := user.opponentSex()
+
+	if err := db.Find(&users, "sex=?", opponentSex).Error; err != nil {
+		return user, err
+	}
+
+	opponent := getRandUser(users)
+
+	return opponent, nil
 }
 
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
