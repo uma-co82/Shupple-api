@@ -28,6 +28,11 @@ type UserInformation struct {
 	Personality int    `json:"personality"`
 }
 
+type UserCombination struct {
+	UID         string `json:"uid"`
+	OpponentUID string `json:"opponentUid"`
+}
+
 // POSTされた値を受け取る為の構造体
 type PostUser struct {
 	UID         string    `json:"uid"`
