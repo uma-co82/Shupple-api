@@ -28,6 +28,7 @@ type UserInformation struct {
 	Personality int    `json:"personality"`
 }
 
+// 1度マッチングしたか判定するための構造体
 type UserCombination struct {
 	UID         string `json:"uid"`
 	OpponentUID string `json:"opponentUid"`
