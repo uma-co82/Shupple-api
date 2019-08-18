@@ -30,6 +30,7 @@ type UserInformation struct {
 
 // 1度マッチングしたか判定するための構造体
 type UserCombination struct {
+	gorm.Model
 	UID         string `json:"uid"`
 	OpponentUID string `json:"opponentUid"`
 }
