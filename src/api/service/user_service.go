@@ -23,6 +23,9 @@ type UID struct {
 	uid string `json:"uid"`
 }
 
+// レシーバーで受け取ったUserの異性を返す
+// 0 - 男性
+// 1 - 女性
 func (user *User) opponentSex() int {
 	switch user.Sex {
 	case 0:
