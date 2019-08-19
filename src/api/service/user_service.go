@@ -15,6 +15,9 @@ type UserService struct{}
 
 type PostUser model.PostUser
 type User model.User
+type UserInformation model.UserInformation
+type UserCombination model.UserCombination
+type Profile model.Profile
 
 type UID struct {
 	uid string `json:"uid"`
@@ -78,10 +81,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		return user, err
 	}
 
-	fmt.Println(user)
-
 	opponentSex := user.opponentSex()
-	fmt.Println(opponentSex)
 
 	if err := db.Find(&users, "sex=?", opponentSex).Error; err != nil {
 		return user, err
