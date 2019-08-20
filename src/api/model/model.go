@@ -57,3 +57,9 @@ type Profile struct {
 	OpponentAge int             `json:"opponentAge"`
 	Information UserInformation `json:"userInformation"`
 }
+
+type Error struct {
+	Code              int      `json:"code"`
+	Message           string   `json:"message"`
+	ValidationMessage []string `json:"validationMessage"`
+}
