@@ -9,7 +9,7 @@ import (
 
 type UserController struct{}
 
-func (usercontroller UserController) Index(c *gin.Context) {
+func (usercontroller UserController) Shapple(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.GetOpponent(c)
 

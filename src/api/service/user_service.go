@@ -66,6 +66,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 }
 
 // POSTされたjsonを元にUser, UserInformationを作成
+// HACK: どうしても詰め替えの作業が冗長になってる。。ここだけまた他に任せても良いかも！
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var postUser PostUser
