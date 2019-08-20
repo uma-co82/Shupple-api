@@ -56,7 +56,10 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	}
 
 	// WARN: usersがnullの時エラる
-	opponent, _ := getRandUser(users)
+	opponent, err := getRandUser(users)
+	if err != nil {
+		return user, err
+	}
 
 	return opponent, nil
 }
@@ -65,21 +68,23 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var postUser PostUser
 	var user User
+	var err error
 
 	// TODO: Bind出来なかった時のエラーハンドリング
-	if err := c.BindJSON(&postUser); err != nil {
+	if err = c.BindJSON(&postUser); err != nil {
 		fmt.Printf("Binding Error %v", err)
 		return user, err
 	}
 
 	// Firebase UID
 	user.UID = postUser.UID
-	user.calcAge(postUser.BirthDay)
+	err = user.calcAge(postUser.BirthDay)
+	if err != nil {
+		return user, err
+	}
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
-	user.Hobby = postUser.Hobby
 	user.BirthDay = postUser.BirthDay
-	user.Residence = postUser.Residence
 
 	if err := db.Create(&user).Error; err != nil {
 		fmt.Printf("DB Error %v", err)

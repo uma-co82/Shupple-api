@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 )
@@ -20,9 +19,8 @@ func (user *User) opponentSex() int {
 	}
 }
 
-// TODO: エラーハンドリング
 // 引数にとったTimeから年齢を算出
-func (user *User) calcAge(t time.Time) {
+func (user *User) calcAge(t time.Time) error {
 	dateFormatOnlyNumber := "20060102" // YYYYMMDD
 
 	now := time.Now().Format(dateFormatOnlyNumber)
@@ -31,15 +29,14 @@ func (user *User) calcAge(t time.Time) {
 	// 日付文字列をそのまま数値化
 	nowInt, err := strconv.Atoi(now)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	birthdayInt, err := strconv.Atoi(birthday)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	age := (nowInt - birthdayInt) / 10000
 	user.Age = age
+	return nil
 }
