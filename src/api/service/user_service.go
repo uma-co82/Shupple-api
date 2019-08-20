@@ -68,6 +68,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var postUser PostUser
 	var user User
+	var uInformation UserInformation
 	var err error
 
 	// TODO: Bind出来なかった時のエラーハンドリング
@@ -85,8 +86,18 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
+	user.OpponentAge = postUser.OpponentAge
+	uInformation.Hobby = postUser.Hobby
+	uInformation.Residence = postUser.Residence
+	uInformation.Job = postUser.Job
+	uInformation.Personality = postUser.Personality
 
 	if err := db.Create(&user).Error; err != nil {
+		fmt.Printf("DB Error %v", err)
+		return user, err
+	}
+
+	if err := db.Create(&uInformation).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
 		return user, err
 	}
