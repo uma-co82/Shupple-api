@@ -23,7 +23,7 @@ type UID struct {
 	uid string `json:"uid"`
 }
 
-// ランダム取得
+// 引数の[]Userからランダムに1件取得
 func getRandUser(u []User) (User, error) {
 	user := User{}
 	if u == nil {
@@ -36,6 +36,7 @@ func getRandUser(u []User) (User, error) {
 	return user, nil
 }
 
+// 異性のUserを返す
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var users []User
@@ -64,6 +65,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	return opponent, nil
 }
 
+// POSTされたjsonを元にUser, UserInformationを作成
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var postUser PostUser
