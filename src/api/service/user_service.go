@@ -37,7 +37,7 @@ func getRandUser(u []User) (User, error) {
 }
 
 // 異性のUserを返す
-func (s UserService) GetOpponent(c *gin.Context) (User, error) {
+func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var users []User
 	var user User
@@ -47,29 +47,29 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	uid := c.Request.Header.Get("uid")
 
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
-		return user, err
-	}
-
-	if err := db.First(&uInfo, "uid=?", uid).Error; err != nil {
-		return user, err
+		return profile, err
 	}
 
 	opponentSex := user.opponentSex()
 
 	if err := db.Find(&users, "sex=?", opponentSex).Error; err != nil {
-		return user, err
+		return profile, err
 	}
 
 	// WARN: usersがnullの時エラる
 	opponent, err := getRandUser(users)
 	if err != nil {
-		return user, err
+		return profile, err
+	}
+
+	if err := db.First(&uInfo, "uid=?", opponent.UID).Error; err != nil {
+		return profile, err
 	}
 
 	profile.User = model.User(opponent)
 	profile.Information = model.UserInformation(uInfo)
 
-	return opponent, nil
+	return profile, nil
 }
 
 // POSTされたjsonを元にUser, UserInformationを作成
