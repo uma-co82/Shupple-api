@@ -9,6 +9,7 @@ import (
 // DBとのやり取りを担うUser構造体
 type User struct {
 	gorm.Model
+	// Firebase UID
 	UID           string    `json:"uid"`
 	NickName      string    `json:"nickName"`
 	Sex           int       `json:"sex"`
@@ -50,11 +51,7 @@ type PostUser struct {
 
 // アプリ側へ返却するUserのProfile構造体
 type Profile struct {
-	UID         string          `json:"uid"`
-	NickName    string          `json:"nickName"`
-	Sex         int             `json:"sex"`
-	Age         int             `json:"Age"`
-	OpponentAge int             `json:"opponentAge"`
+	User        User            `json:"user"`
 	Information UserInformation `json:"userInformation"`
 }
 

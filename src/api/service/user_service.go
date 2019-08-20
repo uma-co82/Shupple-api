@@ -41,12 +41,16 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var users []User
 	var user User
+	var profile Profile
+	var uInfo UserInformation
 
 	uid := c.Request.Header.Get("uid")
 
-	user.UID = uid
+	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+		return user, err
+	}
 
-	if err := db.First(&user).Error; err != nil {
+	if err := db.First(&uInfo, "uid=?", uid).Error; err != nil {
 		return user, err
 	}
 
@@ -62,11 +66,15 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		return user, err
 	}
 
+	// ProfileのUserにmodel.User入れる
+	// profile.User = opponent
+	// profile.Information = uInfo
+
 	return opponent, nil
 }
 
 // POSTされたjsonを元にUser, UserInformationを作成
-// HACK: どうしても詰め替えの作業が冗長になってる。。ここだけまた他に任せても良いかも！
+// HACK: どうしても詰め替えの作業が冗長になってる。。ここだけまた他に任せよう！
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var postUser PostUser
