@@ -66,9 +66,8 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		return user, err
 	}
 
-	// ProfileのUserにmodel.User入れる
-	// profile.User = opponent
-	// profile.Information = uInfo
+	profile.User = model.User(opponent)
+	profile.Information = model.UserInformation(uInfo)
 
 	return opponent, nil
 }
