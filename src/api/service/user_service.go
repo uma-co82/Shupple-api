@@ -17,19 +17,23 @@ type User model.User
 type UserInformation model.UserInformation
 type UserCombination model.UserCombination
 type Profile model.Profile
+type Error model.Error
 
 type UID struct {
 	uid string `json:"uid"`
 }
 
 // ランダム取得
-func getRandUser(u []User) User {
+func getRandUser(u []User) (User, error) {
+	user := User{}
 	if u == nil {
-		return User{}
+		err := RaiseError(404, "Opponent Not Found", nil)
+		return user, err
 	}
 	rand.Seed(time.Now().UnixNano())
 	i := rand.Intn(len(u))
-	return u[i]
+	user = u[i]
+	return user, nil
 }
 
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
@@ -50,10 +54,9 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	if err := db.Find(&users, "sex=?", opponentSex).Error; err != nil {
 		return user, err
 	}
-	fmt.Println(users)
 
 	// WARN: usersがnullの時エラる
-	opponent := getRandUser(users)
+	opponent, _ := getRandUser(users)
 
 	return opponent, nil
 }
