@@ -40,3 +40,18 @@ func (user *User) calcAge(t time.Time) error {
 	user.Age = age
 	return nil
 }
+
+func (user *User) setUser(postUser PostUser) {
+	user.UID = postUser.UID
+	user.NickName = postUser.NickName
+	user.BirthDay = postUser.BirthDay
+	user.OpponentAge = postUser.OpponentAge
+}
+
+func (uInformation *UserInformation) setUserInformation(postUser PostUser) {
+	uInformation.UID = postUser.UID
+	uInformation.Hobby = postUser.Hobby
+	uInformation.Residence = postUser.Residence
+	uInformation.Job = postUser.Job
+	uInformation.Personality = postUser.Personality
+}
