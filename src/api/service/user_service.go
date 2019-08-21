@@ -125,3 +125,7 @@ func (s UserService) GetSelfUser(c *gin.Context) (Profile, error) {
 
 	return profile, nil
 }
+
+func (s UserService) Update(c *gin.Context) (Profile, error)  {
+	db.GetDB()
+}
