@@ -10,19 +10,19 @@ import (
 type User struct {
 	gorm.Model
 	// Firebase UID
-	UID           string    `json:"uid"`
-	NickName      string    `json:"nickName"`
-	Sex           int       `json:"sex"`
-	BirthDay      time.Time `json:"birthDay"`
-	Age           int       `json:"Age"`
-	OpponentAge   int       `json:"opponentAge"`
-	ImageURL      string    `json:"imageUrl"`
-	InformationID int       `json:"informationID"`
+	UID         string    `json:"uid"`
+	NickName    string    `json:"nickName"`
+	Sex         int       `json:"sex"`
+	BirthDay    time.Time `json:"birthDay"`
+	Age         int       `json:"Age"`
+	OpponentAge int       `json:"opponentAge"`
+	ImageURL    string    `json:"imageUrl"`
 }
 
 // DBとのやり取りを担うUserInformation構造体
 type UserInformation struct {
 	gorm.Model
+	UID         string `json:"uid"`
 	Hobby       string `json:"hobby"`
 	Residence   int    `json:"residence"`
 	Job         int    `json:"job"`

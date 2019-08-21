@@ -107,6 +107,8 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		return user, err
 	}
 
+	uInformation.UID = user.UID
+
 	if err := db.Create(&uInformation).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
 		return user, err
