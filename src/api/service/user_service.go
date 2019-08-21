@@ -97,6 +97,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
 	user.OpponentAge = postUser.OpponentAge
+	uInformation.UID = postUser.UID
 	uInformation.Hobby = postUser.Hobby
 	uInformation.Residence = postUser.Residence
 	uInformation.Job = postUser.Job
@@ -106,8 +107,6 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		fmt.Printf("DB Error %v", err)
 		return user, err
 	}
-
-	uInformation.UID = user.UID
 
 	if err := db.Create(&uInformation).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
