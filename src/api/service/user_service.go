@@ -72,35 +72,38 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 }
 
 // POSTされたjsonを元にUser, UserInformationを作成
-// HACK: どうしても詰め替えの作業が冗長になってる。。ここだけメソッドに任せよう！
-func (s UserService) CreateUser(c *gin.Context) (User, error) {
+func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var postUser PostUser
 	var user User
 	var uInformation UserInformation
+	var profile Profile
 
 	// TODO: Bind出来なかった時のエラーハンドリング
 	if err := c.BindJSON(&postUser); err != nil {
 		fmt.Printf("Binding Error %v", err)
-		return user, err
+		return profile, err
 	}
 
 	user.setUser(postUser)
 	err := user.calcAge(postUser.BirthDay)
 	if err != nil {
-		return user, err
+		return profile, err
 	}
 	uInformation.setUserInformation(postUser)
 
 	if err := db.Create(&user).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
-		return user, err
+		return profile, err
 	}
 
 	if err := db.Create(&uInformation).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
-		return user, err
+		return profile, err
 	}
 
-	return user, nil
+	profile = Profile{User: model.User(user),
+		Information: model.UserInformation(uInformation)}
+
+	return profile, nil
 }
