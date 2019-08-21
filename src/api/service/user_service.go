@@ -107,3 +107,9 @@ func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 
 	return profile, nil
 }
+
+func (s UserService) GetSelfUser(c *gin.Context) (Profile, error) {
+	db := db.GetDB()
+
+	uid := c.Request.Header.Get("Uid")
+}

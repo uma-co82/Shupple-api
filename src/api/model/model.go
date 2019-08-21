@@ -14,7 +14,7 @@ type User struct {
 	NickName    string    `json:"nickName"`
 	Sex         int       `json:"sex"`
 	BirthDay    time.Time `json:"birthDay"`
-	Age         int       `json:"Age"`
+	Age         int       `json:"age"`
 	OpponentAge int       `json:"opponentAge"`
 	ImageURL    string    `json:"imageUrl"`
 }
