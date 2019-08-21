@@ -18,6 +18,7 @@ func router() *gin.Engine {
 		ctrl := controller.UserController{}
 		u.GET("", ctrl.Shapple)
 		u.POST("", ctrl.Create)
+		u.GET("/self", ctrl.Self)
 	}
 
 	return r
