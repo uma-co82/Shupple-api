@@ -16,7 +16,6 @@ func router() *gin.Engine {
 	u := r.Group("/users")
 	{
 		ctrl := controller.UserController{}
-		// テスト用 確認取れれば消して良い
 		u.GET("", ctrl.Shapple)
 		u.POST("", ctrl.Create)
 	}

@@ -41,20 +41,16 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	var uInfo UserInformation
 
 	uid := c.Request.Header.Get("Uid")
-	fmt.Printf("UID %v", uid)
 
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
 		return profile, err
 	}
 
 	opponentSex := user.opponentSex()
-	fmt.Printf("Sex %v", opponentSex)
 
 	if err := db.Find(&users, "sex=?", opponentSex).Error; err != nil {
 		return profile, err
 	}
-
-	fmt.Printf("Users [user] %v", users)
 
 	opponent, err := getRandUser(users)
 	if err != nil {
@@ -110,6 +106,22 @@ func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 
 func (s UserService) GetSelfUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
+	var user User
+	var uInformation UserInformation
+	var profile Profile
 
 	uid := c.Request.Header.Get("Uid")
+
+	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+		return profile, err
+	}
+
+	if err := db.First(&uInformation, "uid=?", uid).Error; err != nil {
+		return profile, err
+	}
+
+	profile = Profile{User: model.User(user),
+		Information: model.UserInformation(uInformation)}
+
+	return profile, nil
 }
