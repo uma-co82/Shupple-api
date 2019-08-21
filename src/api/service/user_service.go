@@ -19,10 +19,6 @@ type UserCombination model.UserCombination
 type Profile model.Profile
 type Error model.Error
 
-type UID struct {
-	uid string `json:"uid"`
-}
-
 // 引数の[]Userからランダムに1件取得
 func getRandUser(u []User) (User, error) {
 	user := User{}
@@ -44,17 +40,21 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	var profile Profile
 	var uInfo UserInformation
 
-	uid := c.Request.Header.Get("uid")
+	uid := c.Request.Header.Get("Uid")
+	fmt.Printf("UID %v", uid)
 
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
 		return profile, err
 	}
 
 	opponentSex := user.opponentSex()
+	fmt.Printf("Sex %v", opponentSex)
 
 	if err := db.Find(&users, "sex=?", opponentSex).Error; err != nil {
 		return profile, err
 	}
+
+	fmt.Printf("Users [user] %v", users)
 
 	opponent, err := getRandUser(users)
 	if err != nil {

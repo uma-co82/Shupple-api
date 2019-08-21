@@ -36,7 +36,7 @@ func (user *User) calcAge(t time.Time) error {
 		return err
 	}
 
-	age := (nowInt - birthdayInt) / 10000
+	age := (nowInt-birthdayInt)/10000 + 1
 	user.Age = age
 	return nil
 }
@@ -44,6 +44,7 @@ func (user *User) calcAge(t time.Time) error {
 func (user *User) setUser(postUser PostUser) {
 	user.UID = postUser.UID
 	user.NickName = postUser.NickName
+	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
 	user.OpponentAge = postUser.OpponentAge
 }
