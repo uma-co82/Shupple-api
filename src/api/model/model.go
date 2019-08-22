@@ -9,7 +9,6 @@ import (
 // DBとのやり取りを担うUser構造体
 type User struct {
 	gorm.Model
-	// Firebase UID
 	UID         string    `json:"uid"`
 	NickName    string    `json:"nickName"`
 	Sex         int       `json:"sex"`
