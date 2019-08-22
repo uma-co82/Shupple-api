@@ -34,6 +34,7 @@ type UserCombination struct {
 	gorm.Model
 	UID         string `json:"uid"`
 	OpponentUID string `json:"opponentUid"`
+	CombinationID string `json:"combinationId"`
 }
 
 // POSTされた値を受け取る為の構造体
