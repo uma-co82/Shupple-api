@@ -127,5 +127,47 @@ func (s UserService) GetSelfUser(c *gin.Context) (Profile, error) {
 }
 
 func (s UserService) Update(c *gin.Context) (Profile, error)  {
-	db.GetDB()
+	db := db.GetDB()
+	var postUser PostUser
+	var userBefore User
+	var userAfter User
+	var uInformationBefore UserInformation
+	var uInformationAfter UserInformation
+	var profile Profile
+
+	uid := c.Request.Header.Get("Uid")
+
+	if err := c.BindJSON(&postUser); err != nil {
+		return profile, err
+	}
+
+	userBefore.UID = uid
+	uInformationBefore.UID = uid
+
+	if err := db.First(&userAfter, "uid=?", uid).Error; err != nil {
+		return profile, err
+	}
+
+	if err := db.First(&uInformationAfter, "uid=?", uid).Error; err != nil {
+		return profile, err
+	}
+
+	userAfter.setUser(postUser)
+	if err := userAfter.calcAge(postUser.BirthDay); err != nil {
+		return profile, err
+	}
+	uInformationAfter.setUserInformation(postUser)
+
+	if err := db.Model(&userBefore).Update(&userAfter).Error; err != nil {
+		return profile, err
+	}
+
+	if err := db.Model(&uInformationBefore).Update(&uInformationAfter).Error; err != nil {
+		return profile, err
+	}
+
+	profile = Profile{User: model.User(userAfter),
+		Information: model.UserInformation(uInformationAfter)}
+
+	return profile, nil
 }
