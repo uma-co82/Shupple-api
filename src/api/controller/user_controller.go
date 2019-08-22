@@ -10,7 +10,7 @@ import (
 type UserController struct{}
 
 // TODO: エラハンでError構造体をjsonで返す
-func (usercontroller UserController) Shapple(c *gin.Context) {
+func (usercontroller UserController) Shupple(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.GetOpponent(c)
 
