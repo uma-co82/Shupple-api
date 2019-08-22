@@ -19,6 +19,7 @@ func router() *gin.Engine {
 		u.GET("", ctrl.Shapple)
 		u.POST("", ctrl.Create)
 		u.GET("/self", ctrl.Self)
+		u.PUT("/self", ctrl.Update)
 	}
 
 	return r

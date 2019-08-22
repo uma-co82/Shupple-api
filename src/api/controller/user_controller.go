@@ -36,7 +36,7 @@ func (usercontroller UserController) Create(c *gin.Context) {
 	}
 }
 
-func (userController UserController) Updat(c *gin.Context)  {
+func (userController UserController) Update(c *gin.Context)  {
 	var userService service.UserService
 	p, err := userService.Update(c)
 
