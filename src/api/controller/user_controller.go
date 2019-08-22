@@ -15,7 +15,6 @@ func (usercontroller UserController) Shapple(c *gin.Context) {
 	p, err := userService.GetOpponent(c)
 
 	if err != nil {
-		// TODO: ここ！
 		c.AbortWithStatus(404)
 		fmt.Println(err)
 	} else {
