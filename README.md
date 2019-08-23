@@ -18,10 +18,13 @@
 https://docs.docker.com/
 
 ### 2. Pull Repository
+git clone git@github.com:holefillingco-ltd/Shupple-api.git
 
 ### 3. Docker-compose build
+docker-compose build
 
 ### 4. Docker-compose up
+docker-compose up
 
 ## License
 
