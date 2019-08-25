@@ -46,13 +46,18 @@ func (user *User) setUser(postUser PostUser) {
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
-	user.OpponentAge = postUser.OpponentAge
 }
 
-func (uInformation *UserInformation) setUserInformation(postUser PostUser) {
-	uInformation.UID = postUser.UID
-	uInformation.Hobby = postUser.Hobby
-	uInformation.Residence = postUser.Residence
-	uInformation.Job = postUser.Job
-	uInformation.Personality = postUser.Personality
+func (uInfo *UserInformation) setUserInformation(postUser PostUser) {
+	uInfo.UID = postUser.UID
+	uInfo.OpponentAge = postUser.OpponentAge
+	uInfo.Hobby = postUser.Hobby
+	uInfo.Residence = postUser.Residence
+	uInfo.Job = postUser.Job
+	uInfo.Personality = postUser.Personality
+}
+
+func (uCombi UserCombination) setUserCombination(uid string, opponentUid string)  {
+	uCombi.UID = uid
+	uCombi.OpponentUID = opponentUid
 }

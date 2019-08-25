@@ -47,9 +47,9 @@ func (userController UserController) Update(c *gin.Context)  {
 	}
 }
 
-func (userController UserController) Self(c *gin.Context) {
+func (userController UserController) GetUser(c *gin.Context) {
 	var userService service.UserService
-	p, err := userService.GetSelfUser(c)
+	p, err := userService.GetUser(c)
 
 	if err != nil {
 		c.AbortWithStatus(400)

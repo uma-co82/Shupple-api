@@ -21,7 +21,7 @@ type Error model.Error
 
 // 引数の[]Userからランダムに1件取得
 func getRandUser(u []User) (User, error) {
-	user := User{}
+	var user User
 	if u == nil {
 		err := RaiseError(404, "Opponent Not Found", nil)
 		return user, err
@@ -38,6 +38,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	var users []User
 	var user User
 	var profile Profile
+	var uCombi UserCombination
 	var uInfo UserInformation
 
 	uid := c.Request.Header.Get("Uid")
@@ -61,18 +62,24 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		return profile, err
 	}
 
-	profile.User = model.User(opponent)
-	profile.Information = model.UserInformation(uInfo)
+	uCombi.setUserCombination(user.UID, opponent.UID)
+
+	if err := db.Create(&uCombi).Error; err != nil {
+		return profile, err
+	}
+
+	profile = Profile{User: model.User(opponent),
+		Information: model.UserInformation(uInfo)}
 
 	return profile, nil
 }
 
-// POSTされたjsonを元にUser, UserInformationを作成
+// POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
 func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var postUser PostUser
 	var user User
-	var uInformation UserInformation
+	var uInfo UserInformation
 	var profile Profile
 
 	// TODO: Bind出来なかった時のエラーハンドリング
@@ -86,25 +93,26 @@ func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 	if err != nil {
 		return profile, err
 	}
-	uInformation.setUserInformation(postUser)
+	uInfo.setUserInformation(postUser)
 
 	if err := db.Create(&user).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
 		return profile, err
 	}
 
-	if err := db.Create(&uInformation).Error; err != nil {
+	if err := db.Create(&uInfo).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
 		return profile, err
 	}
 
 	profile = Profile{User: model.User(user),
-		Information: model.UserInformation(uInformation)}
+		Information: model.UserInformation(uInfo)}
 
 	return profile, nil
 }
 
-func (s UserService) GetSelfUser(c *gin.Context) (Profile, error) {
+// UIDでユーザーを検索する
+func (s UserService) GetUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var user User
 	var uInformation UserInformation
@@ -126,6 +134,9 @@ func (s UserService) GetSelfUser(c *gin.Context) (Profile, error) {
 	return profile, nil
 }
 
+/*
+ * User情報の更新
+ */
 func (s UserService) Update(c *gin.Context) (Profile, error)  {
 	db := db.GetDB()
 	var postUser PostUser

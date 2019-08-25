@@ -14,7 +14,6 @@ type User struct {
 	Sex         int       `json:"sex"`
 	BirthDay    time.Time `json:"birthDay"`
 	Age         int       `json:"age"`
-	OpponentAge int       `json:"opponentAge"`
 	ImageURL    string    `json:"imageUrl"`
 }
 
@@ -22,6 +21,7 @@ type User struct {
 type UserInformation struct {
 	gorm.Model
 	UID         string `json:"uid"`
+	OpponentAge int       `json:"opponentAge"`
 	Hobby       string `json:"hobby"`
 	Residence   int    `json:"residence"`
 	Job         int    `json:"job"`
@@ -33,7 +33,6 @@ type UserCombination struct {
 	gorm.Model
 	UID         string `json:"uid"`
 	OpponentUID string `json:"opponentUid"`
-	CombinationID string `json:"combinationId"`
 }
 
 // POSTされた値を受け取る為の構造体
