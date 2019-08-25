@@ -1,13 +1,12 @@
 package service
 
 import (
-	"fmt"
-	"math/rand"
-	"time"
-
 	"../db"
 	"../model"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"math/rand"
+	"time"
 )
 
 type UserService struct{}
@@ -16,6 +15,7 @@ type PostUser model.PostUser
 type User model.User
 type UserInformation model.UserInformation
 type UserCombination model.UserCombination
+type InfoCompatible model.InfoCompatible
 type Profile model.Profile
 type Error model.Error
 
@@ -33,19 +33,20 @@ func getRandUser(u []User) (User, error) {
 	user = u[i]
 	return user, nil
 }
+
 /*
  * 異性のUserを返す
  */
 func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var (
-		users []User
-		user User
-		opponent User
-		profile Profile
-		uCombi UserCombination
+		users         []User
+		user          User
+		opponent      User
+		profile       Profile
+		uComb         UserCombination
 		uCombinations []UserCombination
-		uInfo UserInformation
+		uInfo         UserInformation
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -80,8 +81,8 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		return profile, err
 	}
 
-	uCombi.setUserCombination(user.UID, opponent.UID)
-	if err := db.Create(&uCombi).Error; err != nil {
+	uComb.setUserCombination(user.UID, opponent.UID)
+	if err := db.Create(&uComb).Error; err != nil {
 		return profile, err
 	}
 
@@ -90,6 +91,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 
 	return profile, nil
 }
+
 /*
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
  */
@@ -97,9 +99,9 @@ func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var (
 		postUser PostUser
-		user User
-		uInfo UserInformation
-		profile Profile
+		user     User
+		uInfo    UserInformation
+		profile  Profile
 	)
 
 	// TODO: Bind出来なかった時のエラーハンドリング
@@ -130,15 +132,16 @@ func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 
 	return profile, nil
 }
+
 /*
  * UIDでユーザーを検索する
  */
 func (s UserService) GetUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var (
-		user User
+		user         User
 		uInformation UserInformation
-		profile Profile
+		profile      Profile
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -156,18 +159,19 @@ func (s UserService) GetUser(c *gin.Context) (Profile, error) {
 
 	return profile, nil
 }
+
 /*
  * User情報の更新
  */
-func (s UserService) Update(c *gin.Context) (Profile, error)  {
+func (s UserService) Update(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var (
-		postUser PostUser
-		userBefore User
-		userAfter User
+		postUser           PostUser
+		userBefore         User
+		userAfter          User
 		uInformationBefore UserInformation
-		uInformationAfter UserInformation
-		profile Profile
+		uInformationAfter  UserInformation
+		profile            Profile
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -204,4 +208,20 @@ func (s UserService) Update(c *gin.Context) (Profile, error)  {
 		Information: model.UserInformation(uInformationAfter)}
 
 	return profile, nil
+}
+
+/*
+ * n通以上メッセージのやり取りがあった場合に相性が良い組み合わせと考え
+ * UserCompatibleに保存する
+ */
+func CreateCompatible(c *gin.Context) {
+	db := db.GetDB()
+	var (
+		infoCompatible InfoCompatible
+		postUserComb   UserCombination
+	)
+
+	if err := c.BindJSON(&postUserComb); err != nil {
+	}
+
 }

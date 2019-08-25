@@ -33,7 +33,7 @@ type UserInformation struct {
 }
 
 /*
- * 1度マッチングしたか判定するための構造体
+ * 任意のUIDの組み合わせを表す構造体
  */
 type UserCombination struct {
 	gorm.Model
@@ -44,7 +44,7 @@ type UserCombination struct {
 /*
  * 相性が良いUserInformationを記録していくUserCompatible構造体
  */
-type UserCompatible struct {
+type InfoCompatible struct {
 	gorm.Model
 	InfoID  string `json:"infoID"`
 	OtherID string `json:"otherID"`
