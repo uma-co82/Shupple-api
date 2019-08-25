@@ -90,7 +90,6 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 
 	return profile, nil
 }
-
 /*
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
  */
@@ -197,7 +196,6 @@ func (s UserService) Update(c *gin.Context) (Profile, error)  {
 	if err := db.Model(&userBefore).Update(&userAfter).Error; err != nil {
 		return profile, err
 	}
-
 	if err := db.Model(&uInformationBefore).Update(&uInformationAfter).Error; err != nil {
 		return profile, err
 	}

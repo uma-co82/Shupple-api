@@ -20,11 +20,12 @@ func (user *User) opponentSex() int {
 		return 0
 	}
 }
+
 /*
  * 引数にとったTimeから年齢を算出
  */
 func (user *User) calcAge(t time.Time) error {
-	dateFormatOnlyNumber := "20060102" // YYYYMMDD
+	dateFormatOnlyNumber := "20060102"
 
 	now := time.Now().Format(dateFormatOnlyNumber)
 	birthday := t.Format(dateFormatOnlyNumber)
@@ -43,6 +44,7 @@ func (user *User) calcAge(t time.Time) error {
 	user.Age = age
 	return nil
 }
+
 /*
  * Userの詰め替え
  */
@@ -52,6 +54,7 @@ func (user *User) setUser(postUser PostUser) {
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
 }
+
 /*
  * UserInformationの詰め替え
  */
@@ -63,10 +66,11 @@ func (uInfo *UserInformation) setUserInformation(postUser PostUser) {
 	uInfo.Job = postUser.Job
 	uInfo.Personality = postUser.Personality
 }
+
 /*
  * UserCombinationの詰め替え
  */
-func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string)  {
+func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string) {
 	uCombi.UID = uid
 	uCombi.OpponentUID = opponentUid
 }
