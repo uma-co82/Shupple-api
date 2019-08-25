@@ -38,13 +38,15 @@ func getRandUser(u []User) (User, error) {
  */
 func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
-	var users []User
-	var user User
-	var opponent User
-	var profile Profile
-	var uCombi UserCombination
-	var uCombinations []UserCombination
-	var uInfo UserInformation
+	var (
+		users []User
+		user User
+		opponent User
+		profile Profile
+		uCombi UserCombination
+		uCombinations []UserCombination
+		uInfo UserInformation
+	)
 
 	uid := c.Request.Header.Get("Uid")
 
@@ -94,10 +96,12 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
  */
 func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
-	var postUser PostUser
-	var user User
-	var uInfo UserInformation
-	var profile Profile
+	var (
+		postUser PostUser
+		user User
+		uInfo UserInformation
+		profile Profile
+	)
 
 	// TODO: Bind出来なかった時のエラーハンドリング
 	if err := c.BindJSON(&postUser); err != nil {
@@ -132,9 +136,11 @@ func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
  */
 func (s UserService) GetUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
-	var user User
-	var uInformation UserInformation
-	var profile Profile
+	var (
+		user User
+		uInformation UserInformation
+		profile Profile
+	)
 
 	uid := c.Request.Header.Get("Uid")
 
@@ -156,12 +162,14 @@ func (s UserService) GetUser(c *gin.Context) (Profile, error) {
  */
 func (s UserService) Update(c *gin.Context) (Profile, error)  {
 	db := db.GetDB()
-	var postUser PostUser
-	var userBefore User
-	var userAfter User
-	var uInformationBefore UserInformation
-	var uInformationAfter UserInformation
-	var profile Profile
+	var (
+		postUser PostUser
+		userBefore User
+		userAfter User
+		uInformationBefore UserInformation
+		uInformationAfter UserInformation
+		profile Profile
+	)
 
 	uid := c.Request.Header.Get("Uid")
 

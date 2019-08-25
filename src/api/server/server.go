@@ -18,7 +18,7 @@ func router() *gin.Engine {
 		ctrl := controller.UserController{}
 		u.GET("", ctrl.Shupple)
 		u.POST("", ctrl.Create)
-		u.GET("/self", ctrl.GetUser)
+		u.GET("/select", ctrl.GetUser)
 		u.PUT("/self", ctrl.Update)
 	}
 

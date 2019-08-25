@@ -12,7 +12,7 @@ type UserController struct{}
 /*
  * TODO: エラハンでError構造体をjsonで返す
  */
-func (usercontroller UserController) Shupple(c *gin.Context) {
+func (userController UserController) Shupple(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.GetOpponent(c)
 
@@ -26,7 +26,7 @@ func (usercontroller UserController) Shupple(c *gin.Context) {
 /*
  * TODO: エラハンでError構造体をjsonで返す
  */
-func (usercontroller UserController) Create(c *gin.Context) {
+func (userController UserController) Create(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.CreateUser(c)
 
