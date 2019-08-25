@@ -33,8 +33,9 @@ func getRandUser(u []User) (User, error) {
 	user = u[i]
 	return user, nil
 }
-
-// 異性のUserを返す
+/*
+ * 異性のUserを返す
+ */
 func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var users []User
@@ -76,7 +77,9 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	return profile, nil
 }
 
-// POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
+/*
+ * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
+ */
 func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var postUser PostUser
