@@ -9,7 +9,9 @@ import (
 
 type UserController struct{}
 
-// TODO: エラハンでError構造体をjsonで返す
+/*
+ * TODO: エラハンでError構造体をjsonで返す
+ */
 func (usercontroller UserController) Shupple(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.GetOpponent(c)
@@ -21,8 +23,9 @@ func (usercontroller UserController) Shupple(c *gin.Context) {
 		c.JSON(200, p)
 	}
 }
-
-// TODO: エラハンでError構造体をjsonで返す
+/*
+ * TODO: エラハンでError構造体をjsonで返す
+ */
 func (usercontroller UserController) Create(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.CreateUser(c)
@@ -34,7 +37,9 @@ func (usercontroller UserController) Create(c *gin.Context) {
 		c.JSON(200, p)
 	}
 }
-
+/*
+ * User情報更新
+ */
 func (userController UserController) Update(c *gin.Context)  {
 	var userService service.UserService
 	p, err := userService.Update(c)
@@ -46,7 +51,9 @@ func (userController UserController) Update(c *gin.Context)  {
 		c.JSON(200, p)
 	}
 }
-
+/*
+ * User取得
+ */
 func (userController UserController) GetUser(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.GetUser(c)

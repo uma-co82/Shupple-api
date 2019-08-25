@@ -5,9 +5,11 @@ import (
 	"time"
 )
 
-// レシーバーで受け取ったUserの異性を返す
-// 0 - 男性
-// 1 - 女性
+/*
+ * レシーバーで受け取ったUserの異性を返す
+ * 0 - 男性
+ * 1 - 女性
+ */
 func (user *User) opponentSex() int {
 	switch user.Sex {
 	case 0:
@@ -18,8 +20,9 @@ func (user *User) opponentSex() int {
 		return 0
 	}
 }
-
-// 引数にとったTimeから年齢を算出
+/*
+ * 引数にとったTimeから年齢を算出
+ */
 func (user *User) calcAge(t time.Time) error {
 	dateFormatOnlyNumber := "20060102" // YYYYMMDD
 
@@ -40,14 +43,18 @@ func (user *User) calcAge(t time.Time) error {
 	user.Age = age
 	return nil
 }
-
+/*
+ * Userの詰め替え
+ */
 func (user *User) setUser(postUser PostUser) {
 	user.UID = postUser.UID
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
 }
-
+/*
+ * UserInformationの詰め替え
+ */
 func (uInfo *UserInformation) setUserInformation(postUser PostUser) {
 	uInfo.UID = postUser.UID
 	uInfo.OpponentAge = postUser.OpponentAge
@@ -56,7 +63,9 @@ func (uInfo *UserInformation) setUserInformation(postUser PostUser) {
 	uInfo.Job = postUser.Job
 	uInfo.Personality = postUser.Personality
 }
-
+/*
+ * UserCombinationの詰め替え
+ */
 func (uCombi UserCombination) setUserCombination(uid string, opponentUid string)  {
 	uCombi.UID = uid
 	uCombi.OpponentUID = opponentUid

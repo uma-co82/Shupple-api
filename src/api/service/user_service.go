@@ -19,7 +19,9 @@ type UserCombination model.UserCombination
 type Profile model.Profile
 type Error model.Error
 
-// 引数の[]Userからランダムに1件取得
+/*
+ * 引数の[]Userからランダムに1件取得
+ */
 func getRandUser(u []User) (User, error) {
 	var user User
 	if u == nil {
@@ -110,8 +112,9 @@ func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
 
 	return profile, nil
 }
-
-// UIDでユーザーを検索する
+/*
+ * UIDでユーザーを検索する
+ */
 func (s UserService) GetUser(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var user User
@@ -133,7 +136,6 @@ func (s UserService) GetUser(c *gin.Context) (Profile, error) {
 
 	return profile, nil
 }
-
 /*
  * User情報の更新
  */

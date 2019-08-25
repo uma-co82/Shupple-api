@@ -6,7 +6,9 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// DBとのやり取りを担うUser構造体
+/*
+ * DBとのやり取りを担うUser構造体
+ */
 type User struct {
 	gorm.Model
 	UID         string    `json:"uid"`
@@ -16,8 +18,9 @@ type User struct {
 	Age         int       `json:"age"`
 	ImageURL    string    `json:"imageUrl"`
 }
-
-// DBとのやり取りを担うUserInformation構造体
+/*
+ * DBとのやり取りを担うUserInformation構造体
+ */
 type UserInformation struct {
 	gorm.Model
 	UID         string `json:"uid"`
@@ -27,15 +30,17 @@ type UserInformation struct {
 	Job         int    `json:"job"`
 	Personality int    `json:"personality"`
 }
-
-// 1度マッチングしたか判定するための構造体
+/*
+ * 1度マッチングしたか判定するための構造体
+ */
 type UserCombination struct {
 	gorm.Model
 	UID         string `json:"uid"`
 	OpponentUID string `json:"opponentUid"`
 }
-
-// POSTされた値を受け取る為の構造体
+/*
+ * POSTされた値を受け取る為の構造体
+ */
 type PostUser struct {
 	UID         string    `json:"uid"`
 	NickName    string    `json:"nickName"`
@@ -47,13 +52,16 @@ type PostUser struct {
 	Job         int       `json:"job"`
 	Personality int       `json:"personality"`
 }
-
-// アプリ側へ返却するUserのProfile構造体
+/*
+ * フロントへ返却するUserのProfile構造体
+ */
 type Profile struct {
 	User        User            `json:"user"`
 	Information UserInformation `json:"userInformation"`
 }
-
+/*
+ * エラーが発生した場合にフロントへ返却するError構造体
+ */
 type Error struct {
 	Code              int      `json:"code"`
 	Message           string   `json:"message"`
