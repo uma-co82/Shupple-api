@@ -66,13 +66,9 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		if err := db.Where("uid=? AND opponent_uid=?", user.UID, opponent.UID).Find(&uCombinations).Error; err != nil {
 			return profile, err
 		}
-		if uCombinations == nil {
+		if uCombinations != nil {
 			break
 		}
-	}
-
-	if uCombinations != nil {
-		opponent, _ = getRandUser(users)
 	}
 
 	if err := db.First(&uInfo, "uid=?", opponent.UID).Error; err != nil {
@@ -80,7 +76,6 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	}
 
 	uCombi.setUserCombination(user.UID, opponent.UID)
-
 	if err := db.Create(&uCombi).Error; err != nil {
 		return profile, err
 	}

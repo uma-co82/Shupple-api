@@ -66,7 +66,7 @@ func (uInfo *UserInformation) setUserInformation(postUser PostUser) {
 /*
  * UserCombinationの詰め替え
  */
-func (uCombi UserCombination) setUserCombination(uid string, opponentUid string)  {
+func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string)  {
 	uCombi.UID = uid
 	uCombi.OpponentUID = opponentUid
 }
