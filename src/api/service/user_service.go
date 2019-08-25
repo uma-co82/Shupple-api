@@ -59,14 +59,16 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	}
 
 	for {
-		opponent, err := getRandUser(users)
+		var err error
+		opponent, err = getRandUser(users)
 		if err != nil {
 			return profile, err
 		}
 		if err := db.Where("uid=? AND opponent_uid=?", user.UID, opponent.UID).Find(&uCombinations).Error; err != nil {
 			return profile, err
 		}
-		if uCombinations != nil {
+		fmt.Printf("*************************** %v * \n", uCombinations)
+		if len(uCombinations) == 0 {
 			break
 		}
 	}
