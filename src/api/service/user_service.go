@@ -58,6 +58,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		return profile, err
 	}
 
+	// TODO: 新規のユーザーが見つからなかったら無限ループしちゃう
 	for {
 		var err error
 		opponent, err = getRandUser(users)
@@ -67,7 +68,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		if err := db.Where("uid=? AND opponent_uid=?", user.UID, opponent.UID).Find(&uCombinations).Error; err != nil {
 			return profile, err
 		}
-		fmt.Printf("*************************** %v * \n", uCombinations)
+
 		if len(uCombinations) == 0 {
 			break
 		}
