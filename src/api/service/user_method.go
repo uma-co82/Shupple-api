@@ -31,6 +31,7 @@ func (user *User) calcAge(t time.Time) error {
 	birthday := t.Format(dateFormatOnlyNumber)
 
 	// 日付文字列をそのまま数値化
+	// TODO: エラハン
 	nowInt, err := strconv.Atoi(now)
 	if err != nil {
 		return err
