@@ -38,7 +38,7 @@ type UserInformation struct {
 type UserCombination struct {
 	gorm.Model
 	UID         string `json:"uid"`
-	OpponentUID string `json:"opponentUid"`
+	OpponentUID string `json:"otherID"`
 }
 
 /*

@@ -9,9 +9,11 @@ import (
 	"time"
 )
 
-type UserService struct{}
+type (
+	UserService struct{}
+	PostUser    model.PostUser
+)
 
-type PostUser model.PostUser
 type User model.User
 type UserInformation model.UserInformation
 type UserCombination model.UserCombination
@@ -216,12 +218,14 @@ func (s UserService) Update(c *gin.Context) (Profile, error) {
  */
 func CreateCompatible(c *gin.Context) {
 	db := db.GetDB()
-	var (
-		infoCompatible InfoCompatible
-		postUserComb   UserCombination
-	)
+	var infoCompatible InfoCompatible
 
-	if err := c.BindJSON(&postUserComb); err != nil {
+	if err := c.BindJSON(&infoCompatible); err != nil {
+		return
+	}
+
+	if err := db.Create(&infoCompatible).Error; err != nil {
+		return
 	}
 
 }
