@@ -215,16 +215,17 @@ func (s UserService) Update(c *gin.Context) (Profile, error) {
  * n通以上メッセージのやり取りがあった場合に相性が良い組み合わせと考え
  * UserCompatibleに保存する
  */
-func CreateCompatible(c *gin.Context) {
+func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 	db := db.GetDB()
 	var infoCompatible InfoCompatible
 
 	if err := c.BindJSON(&infoCompatible); err != nil {
-		return
+		return infoCompatible, err
 	}
 
 	if err := db.Create(&infoCompatible).Error; err != nil {
-		return
+		return infoCompatible, err
 	}
 
+	return infoCompatible, nil
 }

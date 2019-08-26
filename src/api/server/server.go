@@ -20,7 +20,7 @@ func router() *gin.Engine {
 		uGroup.POST("", ctrl.Create)
 		uGroup.GET("/select", ctrl.GetUser)
 		uGroup.PUT("/self", ctrl.Update)
-		uGroup.POST("/compatible")
+		uGroup.POST("/compatible", ctrl.CreateCompatible)
 	}
 
 	return r

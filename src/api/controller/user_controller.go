@@ -23,6 +23,7 @@ func (userController UserController) Shupple(c *gin.Context) {
 		c.JSON(200, p)
 	}
 }
+
 /*
  * TODO: エラハンでError構造体をjsonで返す
  */
@@ -37,10 +38,11 @@ func (userController UserController) Create(c *gin.Context) {
 		c.JSON(200, p)
 	}
 }
+
 /*
  * User情報更新
  */
-func (userController UserController) Update(c *gin.Context)  {
+func (userController UserController) Update(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.Update(c)
 
@@ -51,6 +53,7 @@ func (userController UserController) Update(c *gin.Context)  {
 		c.JSON(200, p)
 	}
 }
+
 /*
  * User取得
  */
@@ -61,6 +64,20 @@ func (userController UserController) GetUser(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatus(400)
 		fmt.Println(err)
+	} else {
+		c.JSON(200, p)
+	}
+}
+
+/**
+ * 相性が良い条件の組み合わせを保存
+ */
+func (userController UserController) CreateCompatible(c *gin.Context) {
+	var userService service.UserService
+	p, err := userService.CreateCompatible(c)
+
+	if err != nil {
+		c.AbortWithStatus(400)
 	} else {
 		c.JSON(200, p)
 	}
