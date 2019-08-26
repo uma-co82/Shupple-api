@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-/*
+/**
  * DBとのやり取りを担うUser構造体
  */
 type User struct {
@@ -32,7 +32,7 @@ type UserInformation struct {
 	Personality int    `json:"personality"`
 }
 
-/*
+/**
  * 任意のUIDの組み合わせを表す構造体
  */
 type UserCombination struct {
@@ -41,7 +41,7 @@ type UserCombination struct {
 	OpponentUID string `json:"otherID"`
 }
 
-/*
+/**
  * 相性が良いUserInformationを記録していくUserCompatible構造体
  */
 type InfoCompatible struct {
@@ -50,7 +50,7 @@ type InfoCompatible struct {
 	OtherID string `json:"otherID"`
 }
 
-/*
+/**
  * POSTされた値を受け取る為の構造体
  */
 type PostUser struct {
@@ -65,7 +65,7 @@ type PostUser struct {
 	Personality int       `json:"personality"`
 }
 
-/*
+/**
  * フロントへ返却するUserのProfile構造体
  */
 type Profile struct {
@@ -73,7 +73,7 @@ type Profile struct {
 	Information UserInformation `json:"userInformation"`
 }
 
-/*
+/**
  * エラーが発生した場合にフロントへ返却するError構造体
  */
 type Error struct {

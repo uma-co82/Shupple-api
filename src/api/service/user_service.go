@@ -10,16 +10,15 @@ import (
 )
 
 type (
-	UserService struct{}
-	PostUser    model.PostUser
+	UserService     struct{}
+	PostUser        model.PostUser
+	User            model.User
+	UserInformation model.UserInformation
+	UserCombination model.UserCombination
+	InfoCompatible  model.InfoCompatible
+	Profile         model.Profile
+	Error           model.Error
 )
-
-type User model.User
-type UserInformation model.UserInformation
-type UserCombination model.UserCombination
-type InfoCompatible model.InfoCompatible
-type Profile model.Profile
-type Error model.Error
 
 /*
  * 引数の[]Userからランダムに1件取得
