@@ -60,7 +60,8 @@ func (user *User) setUser(postUser PostUser) {
  */
 func (uInfo *UserInformation) setUserInformation(postUser PostUser) {
 	uInfo.UID = postUser.UID
-	uInfo.OpponentAge = postUser.OpponentAge
+	uInfo.OpponentAgeLow = postUser.OpponentAgeLow
+	uInfo.OpponentAgeUpper = postUser.OpponentAgeUpper
 	uInfo.Hobby = postUser.Hobby
 	uInfo.Residence = postUser.Residence
 	uInfo.Job = postUser.Job
