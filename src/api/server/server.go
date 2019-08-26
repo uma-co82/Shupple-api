@@ -13,14 +13,14 @@ func Init() {
 func router() *gin.Engine {
 	r := gin.Default()
 
-	u := r.Group("/users")
+	uGroup := r.Group("/users")
 	{
 		ctrl := controller.UserController{}
-		u.GET("", ctrl.Shupple)
-		u.POST("", ctrl.Create)
-		u.GET("/select", ctrl.GetUser)
-		u.PUT("/self", ctrl.Update)
-		u.POST("/compatible")
+		uGroup.GET("", ctrl.Shupple)
+		uGroup.POST("", ctrl.Create)
+		uGroup.GET("/select", ctrl.GetUser)
+		uGroup.PUT("/self", ctrl.Update)
+		uGroup.POST("/compatible")
 	}
 
 	return r

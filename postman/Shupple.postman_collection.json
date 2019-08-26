@@ -113,6 +113,35 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "/users/compatible",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"infoID\": \"infoid\",\n\t\"otherID\": \"otherid\"\n}"
+				},
+				"url": {
+					"raw": "{{host_name}}/users/compatible",
+					"host": [
+						"{{host_name}}"
+					],
+					"path": [
+						"users",
+						"compatible"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
