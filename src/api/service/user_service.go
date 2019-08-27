@@ -36,7 +36,7 @@ func getRandUser(u []User) (User, error) {
 }
 
 /*
- * 異性のUserを返す
+ * 異性かつ希望の年齢層のUserをランダムに1件返す
  */
 func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
@@ -48,6 +48,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		uComb         UserCombination
 		uCombinations []UserCombination
 		uInfo         UserInformation
+		opponentInfo  UserInformation
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -55,10 +56,13 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
 		return profile, err
 	}
+	if err := db.First(&uInfo, "uid=?", uid).Error; err != nil {
+		return profile, err
+	}
 
 	opponentSex := user.opponentSex()
 
-	if err := db.Find(&users, "sex=?", opponentSex).Error; err != nil {
+	if err := db.Where("age BETWEEN ? AND ? AND sex=?", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex).Find(&users).Error; err != nil {
 		return profile, err
 	}
 
@@ -72,13 +76,12 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		if err := db.Where("uid=? AND opponent_uid=?", user.UID, opponent.UID).Find(&uCombinations).Error; err != nil {
 			return profile, err
 		}
-
 		if len(uCombinations) == 0 {
 			break
 		}
 	}
 
-	if err := db.First(&uInfo, "uid=?", opponent.UID).Error; err != nil {
+	if err := db.First(&opponentInfo, "uid=?", opponent.UID).Error; err != nil {
 		return profile, err
 	}
 
@@ -88,7 +91,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	}
 
 	profile = Profile{User: model.User(opponent),
-		Information: model.UserInformation(uInfo)}
+		Information: model.UserInformation(opponentInfo)}
 
 	return profile, nil
 }
