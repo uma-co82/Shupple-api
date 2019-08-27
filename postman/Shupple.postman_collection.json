@@ -42,7 +42,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"uid\": \"UID\",\n\t\"nickName\": \"ニックネーム\",\n\t\"sex\": 0,\n\t\"hobby\": \"趣味\",\n\t\"birthDay\": \"1995-08-17T11:30:30+09:00\",\n\t\"opponentAge\": 23,\n\t\"residence\": 1,\n\t\"job\": 3,\n\t\"personality\": 5\n}\n"
+					"raw": "{\n\t\"uid\": \"テスト\",\n\t\"nickName\": \"ニックネーム\",\n\t\"sex\": 1,\n\t\"hobby\": \"趣味\",\n\t\"birthDay\": \"1995-08-17T11:30:30+09:00\",\n\t\"opponentAgeLow\": 18,\n\t\"opponentAgeUpper\": 20,\n\t\"residence\": 1,\n\t\"job\": 3,\n\t\"personality\": 5\n}\n"
 				},
 				"url": {
 					"raw": "{{host_name}}/users",

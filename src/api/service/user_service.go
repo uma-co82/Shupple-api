@@ -51,6 +51,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		opponentInfo  UserInformation
 	)
 
+	// 自分のUID
 	uid := c.Request.Header.Get("Uid")
 
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
