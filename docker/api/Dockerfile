@@ -7,8 +7,10 @@ WORKDIR /go/src/api/
 RUN go get -u github.com/gin-gonic/gin \
   && go get -u github.com/jinzhu/gorm \
   && go get -u github.com/go-sql-driver/mysql \
-  && go get -u github.com/google/uuid
+  && go get -u github.com/google/uuid \
   # 完成したものからimport先を変更
-  # && go get -u github.com/holefillingco-ltd/Shupple-api/src/api
+  # && go get -u github.com/holefillingco-ltd/Shupple-api/src/api \
+  && apt-get update -qq \
+  && apt-get install -y mariadb-client vim
 
 CMD ["sh", "./start_app.sh"]
