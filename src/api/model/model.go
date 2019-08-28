@@ -11,12 +11,13 @@ import (
  */
 type User struct {
 	gorm.Model
-	UID      string    `json:"uid"`
-	NickName string    `json:"nickName"`
-	Sex      int       `json:"sex"`
-	BirthDay time.Time `json:"birthDay"`
-	Age      int       `json:"age"`
-	ImageURL string    `json:"imageUrl"`
+	UID              string            `json:"uid"`
+	NickName         string            `json:"nickName"`
+	Sex              int               `json:"sex"`
+	BirthDay         time.Time         `json:"birthDay"`
+	Age              int               `json:"age"`
+	ImageURL         string            `json:"imageUrl"`
+	UserCombinations []UserCombination `gorm:"foreignkey:UID;association_foreignkey:UID"`
 }
 
 /*
