@@ -57,7 +57,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
 		return profile, err
 	}
-	if err := db.First(&uInfo, "uid=?", uid).Error; err != nil {
+	if err := db.Model(&user).Related(&uInfo).Error; err != nil {
 		return profile, err
 	}
 
@@ -82,7 +82,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		}
 	}
 
-	if err := db.First(&opponentInfo, "uid=?", opponent.UID).Error; err != nil {
+	if err := db.Model(&opponent).Related(&opponentInfo).Error; err != nil {
 		return profile, err
 	}
 
@@ -155,7 +155,7 @@ func (s UserService) GetUser(c *gin.Context) (Profile, error) {
 		return profile, err
 	}
 
-	if err := db.First(&uInformation, "uid=?", uid).Error; err != nil {
+	if err := db.Model(&user).Related(&uInformation).Error; err != nil {
 		return profile, err
 	}
 
@@ -192,7 +192,7 @@ func (s UserService) Update(c *gin.Context) (Profile, error) {
 		return profile, err
 	}
 
-	if err := db.First(&uInformationAfter, "uid=?", uid).Error; err != nil {
+	if err := db.Model(&userAfter).Related(&uInformationAfter).Error; err != nil {
 		return profile, err
 	}
 
