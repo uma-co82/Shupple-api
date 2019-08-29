@@ -58,12 +58,14 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		return profile, err
 	}
 	if err := db.Model(&user).Related(&uInfo).Error; err != nil {
+		fmt.Printf("********************   ****************** %v", err)
 		return profile, err
 	}
 
 	opponentSex := user.opponentSex()
 
 	if err := db.Where("age BETWEEN ? AND ? AND sex=?", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex).Find(&users).Error; err != nil {
+		fmt.Printf("********************   ****************** %v", err)
 		return profile, err
 	}
 
@@ -218,6 +220,7 @@ func (s UserService) Update(c *gin.Context) (Profile, error) {
 /*
  * n通以上メッセージのやり取りがあった場合に相性が良い組み合わせと考え
  * UserCompatibleに保存する
+ * MEMO: そもそもこれフロントからinfoID送られないと思うので一旦放置
  */
 func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 	db := db.GetDB()
