@@ -8,6 +8,7 @@ import (
 
 /**
  * DBとのやり取りを担うUser構造体
+ * フロントへ返却する
  */
 type User struct {
 	gorm.Model
@@ -68,14 +69,6 @@ type PostUser struct {
 	Residence        int       `json:"residence"`
 	Job              int       `json:"job"`
 	Personality      int       `json:"personality"`
-}
-
-/**
- * フロントへ返却するUserのProfile構造体
- */
-type Profile struct {
-	User        User            `json:"user"`
-	Information UserInformation `json:"userInformation"`
 }
 
 /**
