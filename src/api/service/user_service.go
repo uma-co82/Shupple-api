@@ -57,7 +57,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
 		return profile, err
 	}
-	if err := db.Model(&user).Related(&uInfo).Error; err != nil {
+	if err := db.Model(&user).Related(&uInfo, "UserInformation").Error; err != nil {
 		fmt.Printf("********************   ****************** %v", err)
 		return profile, err
 	}
@@ -65,7 +65,6 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	opponentSex := user.opponentSex()
 
 	if err := db.Where("age BETWEEN ? AND ? AND sex=?", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex).Find(&users).Error; err != nil {
-		fmt.Printf("********************   ****************** %v", err)
 		return profile, err
 	}
 
@@ -84,7 +83,7 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 		}
 	}
 
-	if err := db.Model(&opponent).Related(&opponentInfo).Error; err != nil {
+	if err := db.Model(&opponent).Related(&opponentInfo, "UserInformation").Error; err != nil {
 		return profile, err
 	}
 

@@ -17,7 +17,7 @@ type User struct {
 	BirthDay         time.Time         `json:"birthDay"`
 	Age              int               `json:"age"`
 	ImageURL         string            `json:"imageUrl"`
-	UserInformation  UserInformation   `gorm:"foreignkey:uid;"`
+	UserInformation  UserInformation   `gorm:"foreignkey:uid;association_foreignkey:uid"`
 	UserCombinations []UserCombination `gorm:"foreignkey:uid;association_foreignkey:uid"`
 }
 
