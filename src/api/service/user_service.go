@@ -3,6 +3,7 @@ package service
 import (
 	"../db"
 	"../model"
+	"../model/front"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"math/rand"
@@ -11,12 +12,12 @@ import (
 
 type (
 	UserService     struct{}
-	PostUser        model.PostUser
 	User            model.User
 	UserInformation model.UserInformation
 	UserCombination model.UserCombination
 	InfoCompatible  model.InfoCompatible
-	Error           model.Error
+	Error           front.Error
+	PostUser        front.PostUser
 )
 
 /*
