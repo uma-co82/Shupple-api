@@ -71,6 +71,10 @@ func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string
 	uCombi.OpponentUID = opponentUid
 }
 
+/*
+ * PostUserのvalidationチェック
+ * エラーがあった場合はError構造体を返す
+ */
 func (postUser *PostUser) checkValidate() error {
 	validate := validator.New()
 	var errMsges []string
@@ -114,7 +118,8 @@ func (postUser *PostUser) checkValidate() error {
 			}
 			errMsges = append(errMsges, errMsg)
 		}
-		return err
+		error := RaiseError(400, "validation failed", errMsges)
+		return error
 	}
 
 	return nil
