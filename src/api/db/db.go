@@ -1,7 +1,7 @@
 package db
 
 import (
-	"../model"
+	"../struct"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )

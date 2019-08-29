@@ -1,7 +1,7 @@
 package service
 
 import (
-	"../model"
+	"../struct"
 	"strconv"
 	"time"
 )

@@ -1,9 +1,8 @@
-package model
+package save
 
 import (
-	"time"
-
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 /**
