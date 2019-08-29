@@ -106,8 +106,6 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	var (
 		postUser PostUser
 		user     User
-		//uInfo    UserInformation
-		//profile  Profile
 	)
 
 	// TODO: Bind出来なかった時のエラーハンドリング
@@ -121,20 +119,11 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	if err != nil {
 		return user, err
 	}
-	//uInfo.setUserInformation(postUser)
 
 	if err := db.Create(&user).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
 		return user, err
 	}
-
-	//if err := db.Create(&uInfo).Error; err != nil {
-	//	fmt.Printf("DB Error %v", err)
-	//	return profile, err
-	//}
-
-	//profile = Profile{User: model.User(user),
-	//	Information: model.UserInformation(uInfo)}
 
 	return user, nil
 }
