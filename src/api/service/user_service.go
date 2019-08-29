@@ -5,6 +5,7 @@ import (
 	"../structs"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/go-playground/validator.v9"
 	"math/rand"
 	"time"
 )
@@ -104,6 +105,10 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	if err := c.BindJSON(&postUser); err != nil {
 		fmt.Printf("Binding Error %v", err)
 		return user, err
+	}
+
+	if err := postUser.checkValidate(); err != nil {
+
 	}
 
 	user.setUser(postUser)

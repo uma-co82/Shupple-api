@@ -7,15 +7,15 @@ import "time"
  */
 type PostUser struct {
 	UID              string    `json:"uid"`
-	NickName         string    `json:"nickName"`
-	Sex              int       `json:"sex"`
-	BirthDay         time.Time `json:"birthDay"`
-	OpponentAgeLow   int       `json:"opponentAgeLow"`
-	OpponentAgeUpper int       `json:"opponentAgeUpper"`
-	Hobby            string    `json:"hobby"`
-	Residence        int       `json:"residence"`
-	Job              int       `json:"job"`
-	Personality      int       `json:"personality"`
+	NickName         string    `json:"nickName" validate:"required,gte=0,lt=10"`
+	Sex              int       `json:"sex" validate:"required"`
+	BirthDay         time.Time `json:"birthDay" validate:"required"`
+	OpponentAgeLow   int       `json:"opponentAgeLow" validate:"required"`
+	OpponentAgeUpper int       `json:"opponentAgeUpper" validate:"required"`
+	Hobby            string    `json:"hobby" validate:"required,gte=0,lt=10"`
+	Residence        int       `json:"residence" validate:"required"`
+	Job              int       `json:"job" validate:"required"`
+	Personality      int       `json:"personality" validate:"required"`
 }
 
 /**

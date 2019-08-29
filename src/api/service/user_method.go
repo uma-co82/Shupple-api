@@ -2,6 +2,7 @@ package service
 
 import (
 	"../structs"
+	"gopkg.in/go-playground/validator.v9"
 	"strconv"
 	"time"
 )
@@ -68,4 +69,12 @@ func (user *User) setUser(postUser PostUser) {
 func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string) {
 	uCombi.UID = uid
 	uCombi.OpponentUID = opponentUid
+}
+
+func (postUser *PostUser) checkValidate() error {
+	validate := validator.New()
+	if err := validate.Struct(postUser); err != nil {
+		return err
+	}
+	return nil
 }
