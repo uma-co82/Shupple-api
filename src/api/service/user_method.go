@@ -2,6 +2,7 @@ package service
 
 import (
 	"../structs"
+	"fmt"
 	"gopkg.in/go-playground/validator.v9"
 	"strconv"
 	"time"
@@ -86,8 +87,8 @@ func (postUser *PostUser) checkValidate() error {
 
 			switch fieldName {
 			case "NickName":
-				var typ = err.Type().String()
-				switch typ {
+				var tag = err.Tag()
+				switch tag {
 				case "required":
 					errMsg = "NickName is required"
 				case "gte", "lt":
@@ -102,9 +103,9 @@ func (postUser *PostUser) checkValidate() error {
 			case "OpponentAgeUpper":
 				errMsg = "OpponentAgeUpper is required"
 			case "Hobby":
-				var typ = err.Type().String()
-				switch typ {
-				case "rquired":
+				var tag = err.Tag()
+				switch tag {
+				case "required":
 					errMsg = "Hobby is required"
 				case "gte", "lt":
 					errMsg = "Hobby is between 1 and 10 characters"
@@ -118,8 +119,7 @@ func (postUser *PostUser) checkValidate() error {
 			}
 			errMsges = append(errMsges, errMsg)
 		}
-		error := RaiseError(400, "validation failed", errMsges)
-		return error
+		return RaiseError(400, "validation failed", errMsges)
 	}
 
 	return nil
