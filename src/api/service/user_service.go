@@ -101,42 +101,42 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 /*
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
  */
-func (s UserService) CreateUser(c *gin.Context) (Profile, error) {
+func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var (
 		postUser PostUser
 		user     User
-		uInfo    UserInformation
-		profile  Profile
+		//uInfo    UserInformation
+		//profile  Profile
 	)
 
 	// TODO: Bind出来なかった時のエラーハンドリング
 	if err := c.BindJSON(&postUser); err != nil {
 		fmt.Printf("Binding Error %v", err)
-		return profile, err
+		return user, err
 	}
 
 	user.setUser(postUser)
 	err := user.calcAge(postUser.BirthDay)
 	if err != nil {
-		return profile, err
+		return user, err
 	}
-	uInfo.setUserInformation(postUser)
+	//uInfo.setUserInformation(postUser)
 
 	if err := db.Create(&user).Error; err != nil {
 		fmt.Printf("DB Error %v", err)
-		return profile, err
+		return user, err
 	}
 
-	if err := db.Create(&uInfo).Error; err != nil {
-		fmt.Printf("DB Error %v", err)
-		return profile, err
-	}
+	//if err := db.Create(&uInfo).Error; err != nil {
+	//	fmt.Printf("DB Error %v", err)
+	//	return profile, err
+	//}
 
-	profile = Profile{User: model.User(user),
-		Information: model.UserInformation(uInfo)}
+	//profile = Profile{User: model.User(user),
+	//	Information: model.UserInformation(uInfo)}
 
-	return profile, nil
+	return user, nil
 }
 
 /*

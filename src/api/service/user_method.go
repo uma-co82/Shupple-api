@@ -1,6 +1,7 @@
 package service
 
 import (
+	"../model"
 	"strconv"
 	"time"
 )
@@ -54,6 +55,12 @@ func (user *User) setUser(postUser PostUser) {
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
+	user.UserInformation = model.UserInformation{UID: postUser.UID,
+		OpponentAgeLow:   postUser.OpponentAgeLow,
+		OpponentAgeUpper: postUser.OpponentAgeUpper,
+		Hobby:            postUser.Hobby,
+		Residence:        postUser.Residence,
+		Job:              postUser.Job, Personality: postUser.Personality}
 }
 
 /*
