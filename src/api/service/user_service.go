@@ -2,8 +2,7 @@ package service
 
 import (
 	"../db"
-	"../struct/front"
-	"../struct/save"
+	"../structs"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"math/rand"
@@ -12,12 +11,12 @@ import (
 
 type (
 	UserService     struct{}
-	User            save.User
-	UserInformation save.UserInformation
-	UserCombination save.UserCombination
-	InfoCompatible  save.InfoCompatible
-	Error           front.Error
-	PostUser        front.PostUser
+	User            structs.User
+	UserInformation structs.UserInformation
+	UserCombination structs.UserCombination
+	InfoCompatible  structs.InfoCompatible
+	Error           structs.Error
+	PostUser        structs.PostUser
 )
 
 /*
@@ -64,6 +63,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	}
 
 	// TODO: 新規のユーザーが見つからなかったら無限ループしちゃう
+	// MEMO: getRandUserで抜けれる？？
 	for {
 		var err error
 		opponent, err = getRandUser(users)

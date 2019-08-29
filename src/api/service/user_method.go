@@ -1,7 +1,7 @@
 package service
 
 import (
-	"../struct"
+	"../structs"
 	"strconv"
 	"time"
 )
@@ -25,14 +25,13 @@ func (user *User) opponentSex() int {
 /*
  * 引数にとったTimeから年齢を算出
  */
-func (user *User) calcAge(t time.Time) error {
+func (user *User) calcAge(birthDay time.Time) error {
 	dateFormatOnlyNumber := "20060102"
 
 	now := time.Now().Format(dateFormatOnlyNumber)
-	birthday := t.Format(dateFormatOnlyNumber)
+	birthday := birthDay.Format(dateFormatOnlyNumber)
 
 	// 日付文字列をそのまま数値化
-	// TODO: エラハン
 	nowInt, err := strconv.Atoi(now)
 	if err != nil {
 		return err
@@ -55,25 +54,12 @@ func (user *User) setUser(postUser PostUser) {
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
-	user.UserInformation = model.UserInformation{UID: postUser.UID,
+	user.UserInformation = structs.UserInformation{UID: postUser.UID,
 		OpponentAgeLow:   postUser.OpponentAgeLow,
 		OpponentAgeUpper: postUser.OpponentAgeUpper,
 		Hobby:            postUser.Hobby,
 		Residence:        postUser.Residence,
 		Job:              postUser.Job, Personality: postUser.Personality}
-}
-
-/*
- * UserInformationの詰め替え
- */
-func (uInfo *UserInformation) setUserInformation(postUser PostUser) {
-	uInfo.UID = postUser.UID
-	uInfo.OpponentAgeLow = postUser.OpponentAgeLow
-	uInfo.OpponentAgeUpper = postUser.OpponentAgeUpper
-	uInfo.Hobby = postUser.Hobby
-	uInfo.Residence = postUser.Residence
-	uInfo.Job = postUser.Job
-	uInfo.Personality = postUser.Personality
 }
 
 /*

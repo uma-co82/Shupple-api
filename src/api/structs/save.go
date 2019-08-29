@@ -1,4 +1,4 @@
-package save
+package structs
 
 import (
 	"github.com/jinzhu/gorm"
