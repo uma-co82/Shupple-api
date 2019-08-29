@@ -73,8 +73,49 @@ func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string
 
 func (postUser *PostUser) checkValidate() error {
 	validate := validator.New()
+	var errMsges []string
+
 	if err := validate.Struct(postUser); err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var errMsg string
+			fieldName := err.Field()
+
+			switch fieldName {
+			case "NickName":
+				var typ = err.Type().String()
+				switch typ {
+				case "required":
+					errMsg = "NickName is required"
+				case "gte", "lt":
+					errMsg = "NickName is between 1 and 10 characters"
+				}
+			case "Sex":
+				errMsg = "Sex is required"
+			case "BirthDay":
+				errMsg = "BirthDay is required"
+			case "OpponentAgeLow":
+				errMsg = "OpponentAgeLow is required"
+			case "OpponentAgeUpper":
+				errMsg = "OpponentAgeUpper is required"
+			case "Hobby":
+				var typ = err.Type().String()
+				switch typ {
+				case "rquired":
+					errMsg = "Hobby is required"
+				case "gte", "lt":
+					errMsg = "Hobby is between 1 and 10 characters"
+				}
+			case "Residence":
+				errMsg = "Residence is required"
+			case "Job":
+				errMsg = "Job is required"
+			case "Personality":
+				errMsg = "Personality is required"
+			}
+			errMsges = append(errMsges, errMsg)
+		}
 		return err
 	}
+
 	return nil
 }
