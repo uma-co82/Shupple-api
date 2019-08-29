@@ -162,6 +162,9 @@ func (s UserService) Update(c *gin.Context) (User, error) {
 	if err := c.BindJSON(&postUser); err != nil {
 		return userAfter, err
 	}
+	if err := postUser.checkValidate(); err != nil {
+		return userAfter, err
+	}
 
 	userBefore.UID = uid
 
