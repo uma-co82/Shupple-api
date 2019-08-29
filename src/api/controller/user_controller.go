@@ -32,7 +32,7 @@ func (userController UserController) Create(c *gin.Context) {
 	p, err := userService.CreateUser(c)
 
 	if err != nil {
-		c.AbortWithStatus(400)
+		c.JSON(400, err)
 		fmt.Println(err)
 	} else {
 		c.JSON(200, p)
@@ -47,7 +47,7 @@ func (userController UserController) Update(c *gin.Context) {
 	p, err := userService.Update(c)
 
 	if err != nil {
-		c.AbortWithStatus(400)
+		c.JSON(400, err)
 		fmt.Println(err)
 	} else {
 		c.JSON(200, p)
