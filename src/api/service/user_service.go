@@ -41,14 +41,14 @@ func getRandUser(u []User) (User, error) {
 func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	db := db.GetDB()
 	var (
-		users         []User
-		user          User
-		opponent      User
-		profile       Profile
-		uComb         UserCombination
-		uCombinations []UserCombination
-		uInfo         UserInformation
-		opponentInfo  UserInformation
+		candidateUsers []User
+		user           User
+		opponent       User
+		profile        Profile
+		uComb          UserCombination
+		uCombinations  []UserCombination
+		uInfo          UserInformation
+		opponentInfo   UserInformation
 	)
 
 	// 自分のUID
@@ -64,29 +64,14 @@ func (s UserService) GetOpponent(c *gin.Context) (Profile, error) {
 	opponentSex := user.opponentSex()
 
 	// 条件に合うユーザを検索
-	// TODO: 条件にあうかつ、UserCombinationのOtherIDにないと言う条件で絞ったほうが良い？
+	// 条件にあうかつ、UserCombinationのOtherIDにないと言う条件で絞る
 	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
-	if err := db.Where("age BETWEEN ? AND ? AND sex=?", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex).Find(&users).Error; err != nil {
+	if err := db.Where("age BETWEEN ? AND ? AND sex=? AND uid NOT IN (select opponent_uid from user_combinations where uid= ?)", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex, uid).Find(&candidateUsers).Error; err != nil {
 		return profile, err
 	}
 
-	if len(users) == 0 {
+	if len(candidateUsers) == 0 {
 		// TODO: 条件に合うユーザがそもそもいない場合の処理
-	}
-
-	// TODO: 新規のユーザーが見つからなかったら無限ループしちゃう
-	for {
-		var err error
-		opponent, err = getRandUser(users)
-		if err != nil {
-			return profile, err
-		}
-		if err := db.Where("uid=? AND opponent_uid=?", user.UID, opponent.UID).Find(&uCombinations).Error; err != nil {
-			return profile, err
-		}
-		if len(uCombinations) == 0 {
-			break
-		}
 	}
 
 	if err := db.First(&opponentInfo, "uid=?", opponent.UID).Error; err != nil {
