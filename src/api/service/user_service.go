@@ -63,7 +63,6 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	}
 
 	// TODO: 新規のユーザーが見つからなかったら無限ループしちゃう
-	// MEMO: getRandUserで抜けれる？？
 	for {
 		var err error
 		opponent, err = getRandUser(users)

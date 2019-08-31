@@ -2,7 +2,6 @@ package service
 
 import (
 	"../structs"
-	"fmt"
 	"gopkg.in/go-playground/validator.v9"
 	"strconv"
 	"time"
