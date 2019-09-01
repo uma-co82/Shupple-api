@@ -2,6 +2,7 @@ package service
 
 import (
 	"../structs"
+	"gopkg.in/go-playground/validator.v8"
 	"gopkg.in/go-playground/validator.v9"
 	"strconv"
 	"time"
@@ -42,7 +43,7 @@ func (user *User) calcAge(birthDay time.Time) error {
 		return err
 	}
 
-	age := (nowInt-birthdayInt)/10000 + 1
+	age := (nowInt - birthdayInt) / 10000
 	user.Age = age
 	return nil
 }
