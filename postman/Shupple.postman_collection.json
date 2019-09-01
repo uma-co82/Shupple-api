@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "11730212-177d-4c04-88e3-d8c2acdcc3a8",
+		"_postman_id": "02a82f8e-b4cc-4267-9d57-afd51101a985",
 		"name": "Shupple",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -12,7 +12,7 @@
 				"header": [
 					{
 						"key": "Uid",
-						"value": "uid3",
+						"value": "uid1",
 						"type": "text"
 					}
 				],
@@ -57,58 +57,57 @@
 			"response": []
 		},
 		{
-			"name": "/users/self",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Uid",
-						"value": "uid",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{host_name}}/users/self",
-					"host": [
-						"{{host_name}}"
-					],
-					"path": [
-						"users",
-						"self"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/users/self",
+			"name": "/users",
 			"request": {
 				"method": "PUT",
 				"header": [
 					{
 						"key": "Content-Type",
 						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					},
 					{
 						"key": "Uid",
-						"value": "uid",
-						"type": "text"
+						"type": "text",
+						"value": "uid1"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"uid\": \"UID\",\n\t\"nickName\": \"ニックネーム\",\n\t\"sex\": 0,\n\t\"hobby\": \"趣味\",\n\t\"birthDay\": \"1995-08-17T11:30:30+09:00\",\n\t\"opponentAge\": 23,\n\t\"residence\": 1,\n\t\"job\": 3,\n\t\"personality\": 5\n}\n"
+					"raw": "{\n\t\"nickName\": \"ニックネーム\",\n\t\"sex\": 0,\n\t\"hobby\": \"趣味\",\n\t\"birthDay\": \"1995-08-17T11:30:30+09:00\",\n\t\"opponentAge\": 23,\n\t\"residence\": 1,\n\t\"job\": 3,\n\t\"personality\": 5\n}\n"
 				},
 				"url": {
-					"raw": "{{host_name}}/users/self",
+					"raw": "{{host_name}}/users",
+					"host": [
+						"{{host_name}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/select",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Uid",
+						"type": "text",
+						"value": "uid"
+					}
+				],
+				"url": {
+					"raw": "{{host_name}}/users/select",
 					"host": [
 						"{{host_name}}"
 					],
 					"path": [
 						"users",
-						"self"
+						"select"
 					]
 				}
 			},

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"../model"
+	"../structs"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -30,8 +30,8 @@ func GetDB() *gorm.DB {
 }
 
 func autoMigration() {
-	db.AutoMigrate(&model.User{})
-	db.AutoMigrate(&model.UserInformation{})
-	db.AutoMigrate(&model.UserCombination{})
-	db.AutoMigrate(&model.InfoCompatible{})
+	db.AutoMigrate(&structs.User{})
+	db.AutoMigrate(&structs.UserInformation{})
+	db.AutoMigrate(&structs.UserCombination{})
+	db.AutoMigrate(&structs.InfoCompatible{})
 }
