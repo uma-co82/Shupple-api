@@ -36,6 +36,7 @@ func getRandUser(u []User) (User, error) {
 
 /*
  * 異性かつ希望の年齢層のUserをランダムに1件返す
+ * TODO: マッチング状態かどうかの判定カラムで検索条件追加
  */
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()
