@@ -51,6 +51,6 @@ type UserCombination struct {
  */
 type InfoCompatible struct {
 	gorm.Model
-	InfoID  string `json:"infoID"`
-	OtherID string `json:"otherID"`
+	InfoID  uint `json:"infoID"`
+	OtherID uint `json:"otherID"`
 }

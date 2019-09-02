@@ -195,11 +195,25 @@ func (s UserService) Update(c *gin.Context) (User, error) {
  */
 func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 	db := db.GetDB()
-	var infoCompatible InfoCompatible
+	var (
+		infoCompatible InfoCompatible
+		uComb          UserCombination
+		uInfo          UserInformation
+		otherUinfo     UserInformation
+	)
 
-	if err := c.BindJSON(&infoCompatible); err != nil {
+	if err := c.BindJSON(&uComb); err != nil {
 		return infoCompatible, err
 	}
+
+	if err := db.First(&uInfo, "uid=?", uComb.UID).Error; err != nil {
+		return infoCompatible, err
+	}
+	if err := db.First(&otherUinfo, "uid=?", uComb.OpponentUID).Error; err != nil {
+		return infoCompatible, err
+	}
+
+	infoCompatible.setInfoCompatible(uInfo.ID, otherUinfo.ID)
 
 	if err := db.Create(&infoCompatible).Error; err != nil {
 		return infoCompatible, err

@@ -72,6 +72,14 @@ func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string
 }
 
 /*
+ * InfoCompatibleの詰め替え
+ */
+func (infoCompatible *InfoCompatible) setInfoCompatible(infoID uint, otherID uint) {
+	infoCompatible.InfoID = infoID
+	infoCompatible.OtherID = otherID
+}
+
+/*
  * PostUserのvalidationチェック
  * エラーがあった場合はError構造体を返す
  */
