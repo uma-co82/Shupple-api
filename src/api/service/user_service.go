@@ -22,16 +22,12 @@ type (
 /*
  * 引数の[]Userからランダムに1件取得
  */
-func getRandUser(u []User) (User, error) {
+func getRandUser(u []User) User {
 	var user User
-	if u == nil {
-		err := RaiseError(404, "Opponent Not Found", nil)
-		return user, err
-	}
 	rand.Seed(time.Now().UnixNano())
 	i := rand.Intn(len(u))
 	user = u[i]
-	return user, nil
+	return user
 }
 
 /*
@@ -41,11 +37,11 @@ func getRandUser(u []User) (User, error) {
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var (
-		users         []User
-		user          User
-		opponent      User
-		uComb         UserCombination
-		uCombinations []UserCombination
+		candidateUsers []User
+		user           User
+		opponent       User
+		uComb          UserCombination
+		uInfo          UserInformation
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -59,24 +55,18 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 
 	opponentSex := user.opponentSex()
 
-	if err := db.Where("age BETWEEN ? AND ? AND sex=?", user.UserInformation.OpponentAgeLow, user.UserInformation.OpponentAgeUpper, opponentSex).Find(&users).Error; err != nil {
+	// 条件に合うユーザを検索
+	// 条件にあうかつ、UserCombinationのOtherIDにないと言う条件で絞る
+	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
+	if err := db.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid= ?)", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex, false, uid).Find(&candidateUsers).Error; err != nil {
 		return opponent, err
 	}
 
-	// TODO: 新規のユーザーが見つからなかったら無限ループしちゃう
-	for {
-		var err error
-		opponent, err = getRandUser(users)
-		if err != nil {
-			return opponent, err
-		}
-		if err := db.Where("uid=? AND opponent_uid=?", user.UID, opponent.UID).Find(&uCombinations).Error; err != nil {
-			return opponent, err
-		}
-		if len(uCombinations) == 0 {
-			break
-		}
+	if len(candidateUsers) == 0 {
+		// TODO: 条件に合うユーザがそもそもいない場合の処理
 	}
+
+	opponent = getRandUser(candidateUsers)
 
 	if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
 		return opponent, err
