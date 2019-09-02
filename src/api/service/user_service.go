@@ -62,6 +62,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	}
 
 	if len(candidateUsers) == 0 {
+		return opponent, RaiseError(404, "Opponent Not Found", nil)
 	}
 
 	opponent = getRandUser(candidateUsers)
