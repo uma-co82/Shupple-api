@@ -56,7 +56,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	opponentSex := user.opponentSex()
 
 	// 条件に合うユーザを検索
-	// 条件にあうかつ、UserCombinationのOtherIDにないと言う条件で絞る
+	// 条件にあうかつ、UserCombinationのOpponentUIDにないと言う条件で絞る
 	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
 	if err := db.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid= ?)", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex, false, uid).Find(&candidateUsers).Error; err != nil {
 		return opponent, err
@@ -67,6 +67,12 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	}
 
 	opponent = getRandUser(candidateUsers)
+	opponentAfter := opponent
+	opponentAfter.IsCombination = true
+
+	if err := db.Model(&opponent).Update(&opponentAfter).Error; err != nil {
+		return opponent, err
+	}
 
 	if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
 		return opponent, err
