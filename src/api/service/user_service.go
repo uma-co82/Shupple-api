@@ -22,16 +22,12 @@ type (
 /*
  * 引数の[]Userからランダムに1件取得
  */
-func getRandUser(u []User) (User, error) {
+func getRandUser(u []User) User {
 	var user User
-	if u == nil {
-		err := RaiseError(404, "Opponent Not Found", nil)
-		return user, err
-	}
 	rand.Seed(time.Now().UnixNano())
 	i := rand.Intn(len(u))
 	user = u[i]
-	return user, nil
+	return user
 }
 
 /*
@@ -69,6 +65,8 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	if len(candidateUsers) == 0 {
 		// TODO: 条件に合うユーザがそもそもいない場合の処理
 	}
+
+	opponent = getRandUser(candidateUsers)
 
 	if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
 		return opponent, err
