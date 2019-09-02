@@ -57,8 +57,8 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 
 	// 条件に合うユーザを検索
 	// 条件にあうかつ、UserCombinationのOtherIDにないと言う条件で絞る
-	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
-	if err := db.Where("age BETWEEN ? AND ? AND sex=? AND uid NOT IN (select opponent_uid from user_combinations where uid= ?)", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex, uid).Find(&candidateUsers).Error; err != nil {
+	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
+	if err := db.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid= ?)", uInfo.OpponentAgeLow, uInfo.OpponentAgeUpper, opponentSex, false, uid).Find(&candidateUsers).Error; err != nil {
 		return opponent, err
 	}
 
