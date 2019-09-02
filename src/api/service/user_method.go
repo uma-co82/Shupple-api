@@ -2,7 +2,6 @@ package service
 
 import (
 	"../structs"
-	"gopkg.in/go-playground/validator.v8"
 	"gopkg.in/go-playground/validator.v9"
 	"strconv"
 	"time"
@@ -10,17 +9,17 @@ import (
 
 /*
  * レシーバーで受け取ったUserの異性を返す
- * 0 - 男性
- * 1 - 女性
+ * 1 - 男性
+ * 2 - 女性
  */
 func (user *User) opponentSex() int {
 	switch user.Sex {
-	case 0:
-		return 1
 	case 1:
-		return 0
+		return 2
+	case 2:
+		return 1
 	default:
-		return 0
+		return 1
 	}
 }
 
