@@ -66,7 +66,7 @@ func (user *User) setUser(postUser PostUser) {
 /*
  * UserCombinationの詰め替え
  */
-func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string) {
+func (uCombi *UserCombination) setUserCombination(uid, opponentUid string) {
 	uCombi.UID = uid
 	uCombi.OpponentUID = opponentUid
 }
@@ -74,7 +74,7 @@ func (uCombi *UserCombination) setUserCombination(uid string, opponentUid string
 /*
  * InfoCompatibleの詰め替え
  */
-func (infoCompatible *InfoCompatible) setInfoCompatible(infoID uint, otherID uint) {
+func (infoCompatible *InfoCompatible) setInfoCompatible(infoID, otherID uint) {
 	infoCompatible.InfoID = infoID
 	infoCompatible.OtherID = otherID
 }
