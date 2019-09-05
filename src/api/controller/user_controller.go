@@ -17,8 +17,7 @@ func (userController UserController) Shupple(c *gin.Context) {
 	p, err := userService.GetOpponent(c)
 
 	if err != nil {
-		c.AbortWithStatus(404)
-		fmt.Println(err)
+		c.JSON(404, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -33,7 +32,6 @@ func (userController UserController) Create(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(400, err)
-		fmt.Println(err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -48,7 +46,6 @@ func (userController UserController) Update(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(400, err)
-		fmt.Println(err)
 	} else {
 		c.JSON(200, p)
 	}
