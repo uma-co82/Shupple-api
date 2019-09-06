@@ -136,7 +136,6 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
 	uid := c.Request.Header.Get("Uid")
 
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
-		fmt.Printf("****************** %e", err)
 		return user, err
 	}
 
