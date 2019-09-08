@@ -31,4 +31,3 @@
 #### Members
 
  ##### [Yuta Isozaki](https://github.com/uma-co82)
- ##### [Satoru Shimono](https://github.com/shimonosatoru)
