@@ -17,6 +17,7 @@ type (
 	InfoCompatible  structs.InfoCompatible
 	Error           structs.Error
 	PostUser        structs.PostUser
+	IsRegistered    structs.IsRegistered
 )
 
 /*
@@ -31,8 +32,29 @@ func getRandUser(u []User) User {
 }
 
 /*
+ * UIDからユーザーが登録済みかを判定する
+ */
+func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
+	db := db.GetDB()
+	var (
+		user         User
+		isRegistered IsRegistered
+	)
+
+	uid := c.Request.Header.Get("Uid")
+
+	if db.First(&user, "uid=?", uid).RecordNotFound() {
+		isRegistered.IsRegistered = false
+		return isRegistered, nil
+	}
+
+	isRegistered.IsRegistered = true
+
+	return isRegistered, nil
+}
+
+/*
  * 異性かつ希望の年齢層のUserをランダムに1件返す
- * TODO: マッチング状態かどうかの判定カラムで検索条件追加
  */
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()

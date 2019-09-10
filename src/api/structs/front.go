@@ -22,7 +22,7 @@ type PostUser struct {
  * UIDからユーザーが登録済みかどうかを返却する構造体
  */
 type IsRegistered struct {
-	IsRegistered string `json:"is_registered"`
+	IsRegistered bool `json:"is_registered"`
 }
 
 /**
