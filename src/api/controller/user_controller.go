@@ -42,7 +42,7 @@ func (userController UserController) Create(c *gin.Context) {
  */
 func (userController UserController) Update(c *gin.Context) {
 	var userService service.UserService
-	p, err := userService.Update(c)
+	p, err := userService.UpdateUser(c)
 
 	if err != nil {
 		c.JSON(400, err)

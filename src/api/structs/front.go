@@ -3,7 +3,7 @@ package structs
 import "time"
 
 /**
- * POSTされた値を受け取る為の構造体
+ * POSTされたユーザー情報を受け取る為の構造体
  */
 type PostUser struct {
 	UID              string    `json:"uid"`
@@ -16,6 +16,13 @@ type PostUser struct {
 	Residence        int       `json:"residence" validate:"required"`
 	Job              int       `json:"job" validate:"required"`
 	Personality      int       `json:"personality" validate:"required"`
+}
+
+/**
+ * UIDからユーザーが登録済みかどうかを返却する構造体
+ */
+type IsRegistered struct {
+	IsRegistered string `json:"is_registered"`
 }
 
 /**

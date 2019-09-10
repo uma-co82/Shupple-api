@@ -149,7 +149,7 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
 /*
  * User情報の更新
  */
-func (s UserService) Update(c *gin.Context) (User, error) {
+func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var (
 		postUser   PostUser
@@ -191,7 +191,6 @@ func (s UserService) Update(c *gin.Context) (User, error) {
 /*
  * n通以上メッセージのやり取りがあった場合に相性が良い組み合わせと考え
  * UserCompatibleに保存する
- * MEMO: そもそもこれフロントからinfoID送られないと思うので一旦放置
  */
 func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 	db := db.GetDB()
