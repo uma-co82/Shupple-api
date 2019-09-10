@@ -141,6 +141,30 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "/users/isRegistered",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Uid",
+						"value": "o1ClDuRqOAPpf4d6Jlz2XEd40g13",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host_name}}/users/isRegistered",
+					"host": [
+						"{{host_name}}"
+					],
+					"path": [
+						"users",
+						"isRegistered"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

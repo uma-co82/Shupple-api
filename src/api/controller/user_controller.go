@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"../service"
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +24,7 @@ func (userController UserController) Shupple(c *gin.Context) {
 /*
  * TODO: エラハンでError構造体をjsonで返す
  */
-func (userController UserController) Create(c *gin.Context) {
+func (userController UserController) CreateUser(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.CreateUser(c)
 
@@ -40,12 +38,26 @@ func (userController UserController) Create(c *gin.Context) {
 /*
  * User情報更新
  */
-func (userController UserController) Update(c *gin.Context) {
+func (userController UserController) UpdateUser(c *gin.Context) {
 	var userService service.UserService
 	p, err := userService.UpdateUser(c)
 
 	if err != nil {
 		c.JSON(400, err)
+	} else {
+		c.JSON(200, p)
+	}
+}
+
+/**
+ * Userが登録済みか調べる
+ */
+func (userController UserController) IsRegisteredUser(c *gin.Context) {
+	var userService service.UserService
+	p, err := userService.IsRegisterdUser(c)
+
+	if err != nil {
+		// TODO: エラハン
 	} else {
 		c.JSON(200, p)
 	}
@@ -60,7 +72,6 @@ func (userController UserController) GetUser(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithStatus(400)
-		fmt.Println(err)
 	} else {
 		c.JSON(200, p)
 	}
