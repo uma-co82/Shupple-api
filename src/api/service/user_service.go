@@ -33,6 +33,7 @@ func getRandUser(u []User) User {
 
 /*
  * UIDからユーザーが登録済みかを判定する
+ * TODO: RecordNotFound以外のエラーハンドリング
  */
 func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
 	db := db.GetDB()
