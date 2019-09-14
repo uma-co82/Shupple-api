@@ -20,6 +20,20 @@ type PostUser struct {
 }
 
 /**
+ * PUTされたユーザー情報を受け取る為の構造体
+ */
+type PutUser struct {
+	NickName          string `json:"nickName" validate:"gte=1,lt=10"`
+	OpponentAgeLow    int    `json:"opponentAgeLow"`
+	OpponentAgeUpper  int    `json:"opponentAgeUpper"`
+	OpponentResidence int    `json:"opponentResidence"`
+	Hobby             string `json:"hobby" validate:"gte=0,lt=10"`
+	Residence         int    `json:"residence"`
+	Job               int    `json:"job"`
+	Personality       int    `json:"personality"`
+}
+
+/**
  * UIDからユーザーが登録済みかどうかを返却する構造体
  */
 type IsRegistered struct {

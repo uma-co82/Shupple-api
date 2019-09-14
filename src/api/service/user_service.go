@@ -17,6 +17,7 @@ type (
 	InfoCompatible  structs.InfoCompatible
 	Error           structs.Error
 	PostUser        structs.PostUser
+	PutUser         structs.PutUser
 	IsRegistered    structs.IsRegistered
 	IsMatched       structs.IsMatched
 )
@@ -130,6 +131,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	// 条件に合うユーザを検索
 	// 条件にあうかつ、UserCombinationのOpponentUIDにないと言う条件で絞る
 	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
+	// TODO: 住んでる場所追加
 	if err := db.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid=?)", user.UserInformation.OpponentAgeLow, user.UserInformation.OpponentAgeUpper, opponentSex, false, uid).Find(&candidateUsers).Error; err != nil {
 		return opponent, err
 	}
@@ -181,11 +183,11 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		return user, err
 	}
 
-	if err := postUser.checkValidate(); err != nil {
+	if err := postUser.checkPostUserValidate(); err != nil {
 		return user, err
 	}
 
-	user.setUser(postUser)
+	user.setUserFromPost(postUser)
 	err := user.calcAge(postUser.BirthDay)
 	if err != nil {
 		return user, err
@@ -227,17 +229,17 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
 func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var (
-		postUser   PostUser
+		putUser    PutUser
 		userBefore User
 		userAfter  User
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := c.BindJSON(&postUser); err != nil {
+	if err := c.BindJSON(&putUser); err != nil {
 		return userAfter, err
 	}
-	if err := postUser.checkValidate(); err != nil {
+	if err := putUser.checkPutUserValidate(); err != nil {
 		return userAfter, err
 	}
 
@@ -247,20 +249,16 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 		return userAfter, err
 	}
 
-	if err := db.Model(&userAfter).Related(&userAfter.UserInformation, "UserInformation").Error; err != nil {
-		return userAfter, err
-	}
-
-	userAfter.setUser(postUser)
-	if err := userAfter.calcAge(postUser.BirthDay); err != nil {
-		return userAfter, err
-	}
+	userAfter.setUserFromPut(putUser)
 
 	if err := db.Model(&userBefore).Update(&userAfter).Error; err != nil {
 		return userAfter, err
 	}
+	if err := db.Model(&userBefore).Related(&userBefore.UserInformation, "UserInformation").Error; err != nil {
+		return userAfter, err
+	}
 
-	return userAfter, nil
+	return userBefore, nil
 }
 
 /**

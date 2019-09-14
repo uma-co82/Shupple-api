@@ -50,7 +50,7 @@ func (user *User) calcAge(birthDay time.Time) error {
 /*
  * Userの詰め替え
  */
-func (user *User) setUser(postUser PostUser) {
+func (user *User) setUserFromPost(postUser PostUser) {
 	user.UID = postUser.UID
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
@@ -62,6 +62,19 @@ func (user *User) setUser(postUser PostUser) {
 		Hobby:             postUser.Hobby,
 		Residence:         postUser.Residence,
 		Job:               postUser.Job, Personality: postUser.Personality}
+}
+
+func (user *User) setUserFromPut(putUser PutUser) {
+	user.NickName = putUser.NickName
+	user.UserInformation = structs.UserInformation{
+		OpponentAgeLow:    putUser.OpponentAgeLow,
+		OpponentAgeUpper:  putUser.OpponentAgeUpper,
+		OpponentResidence: putUser.OpponentResidence,
+		Hobby:             putUser.Hobby,
+		Residence:         putUser.Residence,
+		Job:               putUser.Job,
+		Personality:       putUser.Personality,
+	}
 }
 
 /*
@@ -84,7 +97,7 @@ func (infoCompatible *InfoCompatible) setInfoCompatible(infoID, otherID uint) {
  * PostUserのvalidationチェック
  * エラーがあった場合はError構造体を返す
  */
-func (postUser *PostUser) checkValidate() error {
+func (postUser *PostUser) checkPostUserValidate() error {
 	validate := validator.New()
 	var errMsges []string
 
@@ -126,6 +139,33 @@ func (postUser *PostUser) checkValidate() error {
 				errMsg = "Job is required"
 			case "Personality":
 				errMsg = "Personality is required"
+			}
+			errMsges = append(errMsges, errMsg)
+		}
+		return RaiseError(400, "validation failed", errMsges)
+	}
+
+	return nil
+}
+
+/*
+ * PostUserのvalidationチェック
+ * エラーがあった場合はError構造体を返す
+ */
+func (putUser *PutUser) checkPutUserValidate() error {
+	validate := validator.New()
+	var errMsges []string
+
+	if err := validate.Struct(putUser); err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var errMsg string
+			fieldName := err.Field()
+
+			switch fieldName {
+			case "NickName":
+				errMsg = "NickName is between 1 and 10 characters"
+			case "Hobby":
+				errMsg = "Hobby is between 1 and 10 characters"
 			}
 			errMsges = append(errMsges, errMsg)
 		}
