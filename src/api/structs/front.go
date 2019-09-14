@@ -26,6 +26,14 @@ type IsRegistered struct {
 }
 
 /**
+ * UIDからユーザーがマッチング済みかどうかを返却する構造体
+ */
+type IsMatched struct {
+	IsMatched bool `json:"is_matched"`
+	User      User `json:"user"`
+}
+
+/**
  * エラーが発生した場合にフロントへ返却するError構造体
  */
 type Error struct {

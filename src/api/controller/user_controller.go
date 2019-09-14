@@ -63,6 +63,21 @@ func (userController UserController) IsRegisteredUser(c *gin.Context) {
 	}
 }
 
+/**
+ * Userがマッチング済みか判定
+ * 済みの場合はマッチング相手を返す
+ */
+func (userController UserController) IsMatchedUser(c *gin.Context) {
+	var userService service.UserService
+	p, err := userService.IsMatchedUser(c)
+
+	if err != nil {
+		// TODO: エラハン
+	} else {
+		c.JSON(200, p)
+	}
+}
+
 /*
  * User取得
  */

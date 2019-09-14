@@ -20,6 +20,7 @@ func router() *gin.Engine {
 		uGroup.POST("", ctrl.CreateUser)
 		uGroup.PUT("", ctrl.UpdateUser)
 		uGroup.GET("/isRegistered", ctrl.IsRegisteredUser)
+		uGroup.GET("/isMatched", ctrl.IsMatchedUser)
 		uGroup.GET("/select", ctrl.GetUser)
 		uGroup.POST("/compatible", ctrl.CreateCompatible)
 	}

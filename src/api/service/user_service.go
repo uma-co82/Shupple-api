@@ -18,6 +18,7 @@ type (
 	Error           structs.Error
 	PostUser        structs.PostUser
 	IsRegistered    structs.IsRegistered
+	IsMatched       structs.IsMatched
 )
 
 /**
@@ -55,7 +56,40 @@ func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
 }
 
 /**
+ * UIDからマッチング済みかを判定する
+ * マッチング済みの場合、マッチング相手を返す
+ */
+func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
+	db := db.GetDB()
+	var (
+		user      User
+		opponent  User
+		isMatched IsMatched
+	)
+
+	uid := c.Request.Header.Get("uid")
+
+	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+		return isMatched, err
+	}
+
+	if user.IsCombination == true {
+		if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+			return isMatched, err
+		}
+		isMatched.IsMatched = true
+		isMatched.User = structs.User(opponent)
+		return isMatched, nil
+	}
+
+	isMatched.IsMatched = false
+
+	return isMatched, nil
+}
+
+/**
  * 異性かつ希望の年齢層のUserをランダムに1件返す
+ * マッチング済みの場合はマッチング相手を返す
  */
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()
