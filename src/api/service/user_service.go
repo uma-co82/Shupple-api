@@ -20,7 +20,7 @@ type (
 	IsRegistered    structs.IsRegistered
 )
 
-/*
+/**
  * 引数の[]Userからランダムに1件取得
  */
 func getRandUser(u []User) User {
@@ -31,7 +31,7 @@ func getRandUser(u []User) User {
 	return user
 }
 
-/*
+/**
  * UIDからユーザーが登録済みかを判定する
  * TODO: RecordNotFound以外のエラーハンドリング
  */
@@ -54,7 +54,7 @@ func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
 	return isRegistered, nil
 }
 
-/*
+/**
  * 異性かつ希望の年齢層のUserをランダムに1件返す
  */
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
@@ -71,6 +71,14 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
 		return opponent, err
 	}
+
+	if user.IsCombination == true {
+		if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+			return opponent, err
+		}
+		return opponent, nil
+	}
+
 	if err := db.Model(&user).Related(&user.UserInformation, "UserInformation").Error; err != nil {
 		return opponent, err
 	}
@@ -91,7 +99,9 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	opponent = getRandUser(candidateUsers)
 	opponentAfter := opponent
 	opponentAfter.IsCombination = true
+	opponentAfter.OpponentUid = user.UID
 	userAfter := user
+	userAfter.OpponentUid = opponent.UID
 	userAfter.IsCombination = true
 
 	if err := db.Model(&opponent).Update(&opponentAfter).Error; err != nil {
@@ -113,7 +123,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	return opponent, nil
 }
 
-/*
+/**
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
  */
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
@@ -147,7 +157,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	return user, nil
 }
 
-/*
+/**
  * UIDでユーザーを検索する
  */
 func (s UserService) GetUser(c *gin.Context) (User, error) {
@@ -169,7 +179,7 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
 	return user, nil
 }
 
-/*
+/**
  * User情報の更新
  */
 func (s UserService) UpdateUser(c *gin.Context) (User, error) {
@@ -211,7 +221,7 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	return userAfter, nil
 }
 
-/*
+/**
  * n通以上メッセージのやり取りがあった場合に相性が良い組み合わせと考え
  * UserCompatibleに保存する
  */

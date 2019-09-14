@@ -18,6 +18,7 @@ type User struct {
 	Age              int               `json:"age"`
 	ImageURL         string            `json:"imageUrl"`
 	IsCombination    bool              `json:"isCombination"`
+	OpponentUid      string            `json:"opponentUid"`
 	UserInformation  UserInformation   `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_information"`
 	UserCombinations []UserCombination `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_combinations"`
 }
