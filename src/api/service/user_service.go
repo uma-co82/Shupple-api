@@ -77,20 +77,25 @@ func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
 		if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
 			return isMatched, err
 		}
+		if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
+			return isMatched, err
+		}
 		isMatched.IsMatched = true
-		isMatched.User = structs.User(opponent)
+		tmp := structs.User(opponent)
+		isMatched.User = &tmp
 		return isMatched, nil
 	}
 
 	isMatched.IsMatched = false
-
+	isMatched.User = nil
 	return isMatched, nil
 }
 
-/**
+/*
+*
  * 異性かつ希望の年齢層のUserをランダムに1件返す
  * マッチング済みの場合はマッチング相手を返す
- */
+*/
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var (
@@ -108,6 +113,9 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 
 	if user.IsCombination == true {
 		if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+			return opponent, err
+		}
+		if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
 			return opponent, err
 		}
 		return opponent, nil

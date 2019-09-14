@@ -165,6 +165,37 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "/users/isMatched",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Uid",
+						"value": "uid2",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host_name}}/users/isMatched",
+					"host": [
+						"{{host_name}}"
+					],
+					"path": [
+						"users",
+						"isMatched"
+					],
+					"query": [
+						{
+							"key": "Uid",
+							"value": "o1ClDuRqOAPpf4d6Jlz2XEd40g13",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
