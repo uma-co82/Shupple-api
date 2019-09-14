@@ -11,16 +11,16 @@ import (
  */
 type User struct {
 	gorm.Model
-	UID              string            `json:"uid" sql:"index"`
-	NickName         string            `json:"nickName"`
-	Sex              int               `json:"sex"`
-	BirthDay         time.Time         `json:"birthDay"`
-	Age              int               `json:"age"`
-	ImageURL         string            `json:"imageUrl"`
-	IsCombination    bool              `json:"isCombination"`
-	OpponentUid      string            `json:"opponentUid"`
-	UserInformation  UserInformation   `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_information"`
-	UserCombinations []UserCombination `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_combinations"`
+	UID             string          `json:"uid" sql:"index"`
+	NickName        string          `json:"nickName"`
+	Sex             int             `json:"sex"`
+	BirthDay        time.Time       `json:"birthDay"`
+	Age             int             `json:"age"`
+	ImageURL        string          `json:"imageUrl"`
+	IsCombination   bool            `json:"isCombination"`
+	OpponentUid     string          `json:"opponentUid"`
+	UserInformation UserInformation `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_information"`
+	//UserCombinations []UserCombination `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_combinations"`
 }
 
 /*
@@ -28,13 +28,14 @@ type User struct {
  */
 type UserInformation struct {
 	gorm.Model
-	UID              string `json:"uid" sql:"index"`
-	OpponentAgeLow   int    `json:"opponentAgeLow"`
-	OpponentAgeUpper int    `json:"opponentAgeUpper"`
-	Hobby            string `json:"hobby"`
-	Residence        int    `json:"residence"`
-	Job              int    `json:"job"`
-	Personality      int    `json:"personality"`
+	UID               string `json:"uid" sql:"index"`
+	OpponentAgeLow    int    `json:"opponentAgeLow"`
+	OpponentAgeUpper  int    `json:"opponentAgeUpper"`
+	OpponentResidence int    `json:"opponentResidence"`
+	Hobby             string `json:"hobby"`
+	Residence         int    `json:"residence"`
+	Job               int    `json:"job"`
+	Personality       int    `json:"personality"`
 }
 
 /**

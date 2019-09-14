@@ -56,11 +56,12 @@ func (user *User) setUser(postUser PostUser) {
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
 	user.UserInformation = structs.UserInformation{UID: postUser.UID,
-		OpponentAgeLow:   postUser.OpponentAgeLow,
-		OpponentAgeUpper: postUser.OpponentAgeUpper,
-		Hobby:            postUser.Hobby,
-		Residence:        postUser.Residence,
-		Job:              postUser.Job, Personality: postUser.Personality}
+		OpponentAgeLow:    postUser.OpponentAgeLow,
+		OpponentAgeUpper:  postUser.OpponentAgeUpper,
+		OpponentResidence: postUser.OpponentResidence,
+		Hobby:             postUser.Hobby,
+		Residence:         postUser.Residence,
+		Job:               postUser.Job, Personality: postUser.Personality}
 }
 
 /*
@@ -109,6 +110,8 @@ func (postUser *PostUser) checkValidate() error {
 				errMsg = "OpponentAgeLow is required"
 			case "OpponentAgeUpper":
 				errMsg = "OpponentAgeUpper is required"
+			case "OpponentResidence":
+				errMsg = "OpponentResidence is required"
 			case "Hobby":
 				var tag = err.Tag()
 				switch tag {
