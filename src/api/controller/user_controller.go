@@ -2,6 +2,7 @@ package controller
 
 import (
 	"../service"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,6 +45,7 @@ func (userController UserController) UpdateUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(400, err)
+		fmt.Printf("******************* %v", err)
 	} else {
 		c.JSON(200, p)
 	}
