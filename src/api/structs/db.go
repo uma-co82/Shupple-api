@@ -27,8 +27,9 @@ type User struct {
  * DBとのやり取りを担うUserInformation構造体
  */
 type UserInformation struct {
-	gorm.Model
-	UID               string `json:"uid" sql:"index"`
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	UID               string `json:"uid" sql:"index" gorm:"primary_key"`
 	OpponentAgeLow    int    `json:"opponentAgeLow"`
 	OpponentAgeUpper  int    `json:"opponentAgeUpper"`
 	OpponentResidence int    `json:"opponentResidence"`

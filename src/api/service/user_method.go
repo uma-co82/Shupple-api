@@ -63,7 +63,6 @@ func (user *User) setUserFromPost(postUser PostUser) {
 		Residence:         postUser.Residence,
 		Job:               postUser.Job, Personality: postUser.Personality}
 }
-
 func (user *User) setUserFromPut(putUser PutUser) {
 	user.NickName = putUser.NickName
 	user.UserInformation = structs.UserInformation{

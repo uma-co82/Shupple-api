@@ -225,6 +225,7 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
 
 /**
  * User情報の更新
+ * TODO: 飛んできたプロパティーだけ更新したい。。
  */
 func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
@@ -279,7 +280,7 @@ func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 		return infoCompatible, err
 	}
 
-	infoCompatible.setInfoCompatible(uInfo.ID, otherUinfo.ID)
+	//infoCompatible.setInfoCompatible(uInfo.ID, otherUinfo.ID)
 
 	if err := db.Create(&infoCompatible).Error; err != nil {
 		return infoCompatible, err
