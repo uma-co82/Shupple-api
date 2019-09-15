@@ -18,7 +18,7 @@
 `https://docs.docker.com/`
 
 ### 2. Pull Repository
-`git clone git@github.com:holefillingco-ltd/Shupple-api.git`
+`git clone git@github.com:uma-co82/Shupple-api.git`
 
 ### 3. Docker-compose build
 `docker-compose build`
