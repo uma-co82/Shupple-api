@@ -39,6 +39,7 @@ func getRandUser(u []User) User {
  */
 func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
 	db := db.GetDB()
+	defer db.Close()
 	var (
 		user         User
 		isRegistered IsRegistered
@@ -62,6 +63,7 @@ func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
  */
 func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
 	db := db.GetDB()
+	defer db.Close()
 	var (
 		user      User
 		opponent  User
@@ -99,6 +101,7 @@ func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
 */
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.GetDB()
+	defer db.Close()
 	var (
 		candidateUsers []User
 		user           User
@@ -172,6 +175,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
  */
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
+	defer db.Close()
 	var (
 		postUser PostUser
 		user     User
@@ -206,6 +210,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
  */
 func (s UserService) GetUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
+	defer db.Close()
 	var (
 		user User
 	)
@@ -228,6 +233,7 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
  */
 func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
+	defer db.Close()
 	var (
 		putUser    PutUser
 		userBefore User
@@ -254,6 +260,7 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	if err := db.Model(&userBefore).Update(&userAfter).Error; err != nil {
 		return userAfter, err
 	}
+
 	if err := db.Model(&userBefore).Related(&userBefore.UserInformation, "UserInformation").Error; err != nil {
 		return userAfter, err
 	}
@@ -267,6 +274,7 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
  */
 func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 	db := db.GetDB()
+	defer db.Close()
 	var (
 		infoCompatible InfoCompatible
 		uComb          UserCombination
