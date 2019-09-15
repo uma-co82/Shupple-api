@@ -226,6 +226,7 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
 /**
  * User情報の更新
  * TODO: 飛んできたプロパティーだけ更新したい。。
+ * TODO: userBefore要るのか？？
  */
 func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
