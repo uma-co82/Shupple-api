@@ -23,14 +23,14 @@ type PostUser struct {
  * PUTされたユーザー情報を受け取る為の構造体
  */
 type PutUser struct {
-	NickName          string `json:"nickName" validate:"gte=1,lt=10"`
-	OpponentAgeLow    int    `json:"opponentAgeLow"`
-	OpponentAgeUpper  int    `json:"opponentAgeUpper"`
-	OpponentResidence int    `json:"opponentResidence"`
-	Hobby             string `json:"hobby" validate:"gte=0,lt=10"`
-	Residence         int    `json:"residence"`
-	Job               int    `json:"job"`
-	Personality       int    `json:"personality"`
+	NickName          string `json:"nickName,omitempty" validate:"gte=1,lt=10"`
+	OpponentAgeLow    int    `json:"opponentAgeLow,omitempty"`
+	OpponentAgeUpper  int    `json:"opponentAgeUpper,omitempty"`
+	OpponentResidence int    `json:"opponentResidence,omitempty"`
+	Hobby             string `json:"hobby,omitempty" validate:"gte=0,lt=10"`
+	Residence         int    `json:"residence,omitempty"`
+	Job               int    `json:"job,omitempty"`
+	Personality       int    `json:"personality,omitempty"`
 }
 
 /**
