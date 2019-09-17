@@ -180,11 +180,12 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 
 	// TODO: Bind出来なかった時のエラーハンドリング
 	if err := c.BindJSON(&postUser); err != nil {
-		fmt.Printf("Binding Error %v", err)
 		return user, err
 	}
 
-	s3Service.UploadToS3(postUser.Image)
+	if err := s3Service.UploadToS3(postUser.Image); err != nil {
+		return user, err
+	}
 
 	if err := postUser.checkPostUserValidate(); err != nil {
 		return user, err

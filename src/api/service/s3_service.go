@@ -22,7 +22,7 @@ type (
 	}
 )
 
-func (s S3Service) UploadToS3(image string) {
+func (s S3Service) UploadToS3(image string) error {
 	// 環境変数からS3Credential周りの設定を取得
 	var env Env
 	_ = envconfig.Process("", &env)
@@ -47,9 +47,11 @@ func (s S3Service) UploadToS3(image string) {
 	if err != nil {
 		fmt.Println(res)
 		if err, ok := err.(awserr.Error); ok && err.Code() == request.CanceledErrorCode {
-			fmt.Println("time out")
+			return RaiseError(400, "Upload TimuOut", nil)
 		} else {
-			fmt.Printf("failed to upload object %v\n", "")
+			return RaiseError(400, "Upload Failed", nil)
 		}
 	}
+
+	return nil
 }
