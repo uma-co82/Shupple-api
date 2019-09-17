@@ -173,8 +173,9 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var (
-		postUser PostUser
-		user     User
+		postUser  PostUser
+		user      User
+		s3Service S3Service
 	)
 
 	// TODO: Bind出来なかった時のエラーハンドリング
@@ -182,6 +183,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		fmt.Printf("Binding Error %v", err)
 		return user, err
 	}
+	s3Service.UploadToS3(postUser.Image)
 
 	if err := postUser.checkPostUserValidate(); err != nil {
 		return user, err

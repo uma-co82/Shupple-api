@@ -9,6 +9,7 @@ import (
  */
 type PostUser struct {
 	UID               string    `json:"uid"`
+	Image             string    `json:"image"`
 	NickName          string    `json:"nickName" validate:"required,gte=1,lt=10"`
 	Sex               int       `json:"sex" validate:"required"`
 	BirthDay          time.Time `json:"birthDay" validate:"required"`
