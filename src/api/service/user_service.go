@@ -183,6 +183,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		fmt.Printf("Binding Error %v", err)
 		return user, err
 	}
+
 	s3Service.UploadToS3(postUser.Image)
 
 	if err := postUser.checkPostUserValidate(); err != nil {

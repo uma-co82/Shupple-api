@@ -10,15 +10,25 @@ import (
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"os"
+	"github.com/kelseyhightower/envconfig"
 )
 
-type S3Service struct {
-}
+type (
+	S3Service struct{}
+	// NOTE: 環境変数にS3AKとS3SKを設定
+	Env struct {
+		S3AK string
+		S3SK string
+	}
+)
 
-func UploadToS3(image string) {
+func (s S3Service) UploadToS3(image string) {
+	// 環境変数からS3Credential周りの設定を取得
+	var env Env
+	_ = envconfig.Process("", &env)
+
 	sess := session.Must(session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials("", "", ""),
+		Credentials: credentials.NewStaticCredentials(env.S3AK, env.S3SK, ""),
 		Region:      aws.String("ap-northeast-1"),
 	}))
 
@@ -29,7 +39,7 @@ func UploadToS3(image string) {
 	wb.Write(data)
 
 	res, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(""),
+		Bucket: aws.String("isozaki-images"),
 		Key:    aws.String("sample.png"),
 		Body:   wb,
 	})
@@ -37,9 +47,9 @@ func UploadToS3(image string) {
 	if err != nil {
 		fmt.Println(res)
 		if err, ok := err.(awserr.Error); ok && err.Code() == request.CanceledErrorCode {
-			fmt.Fprint(os.Stderr, "upload canceled due to timeout, %v\n", err)
+			fmt.Println("time out")
 		} else {
-			fmt.Fprint(os.Stderr, "failed to upload object %v\n", "bucket")
+			fmt.Printf("failed to upload object %v\n", "")
 		}
 	}
 }
