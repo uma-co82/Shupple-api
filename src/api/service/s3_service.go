@@ -22,7 +22,7 @@ type (
 	}
 )
 
-func (s S3Service) UploadToS3(image string) error {
+func (s S3Service) UploadToS3(image string, userName string) error {
 	// 環境変数からS3Credential周りの設定を取得
 	var env Env
 	_ = envconfig.Process("", &env)
@@ -40,7 +40,7 @@ func (s S3Service) UploadToS3(image string) error {
 
 	res, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String("isozaki-images"),
-		Key:    aws.String("sample.png"),
+		Key:    aws.String(userName + ".png"),
 		Body:   wb,
 	})
 

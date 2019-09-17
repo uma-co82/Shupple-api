@@ -183,7 +183,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		return user, err
 	}
 
-	if err := s3Service.UploadToS3(postUser.Image); err != nil {
+	if err := s3Service.UploadToS3(postUser.Image, postUser.NickName); err != nil {
 		return user, err
 	}
 
