@@ -1,6 +1,8 @@
 package structs
 
-import "time"
+import (
+	"time"
+)
 
 /**
  * POSTされたユーザー情報を受け取る為の構造体
