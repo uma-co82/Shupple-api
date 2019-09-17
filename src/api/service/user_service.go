@@ -192,6 +192,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	}
 
 	user.setUserFromPost(postUser)
+	user.ImageURL = postUser.NickName + ".png"
 	err := user.calcAge(postUser.BirthDay)
 	if err != nil {
 		return user, err
