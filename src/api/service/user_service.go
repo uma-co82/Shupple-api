@@ -38,7 +38,8 @@ func getRandUser(u []User) User {
  * TODO: RecordNotFound以外のエラーハンドリング
  */
 func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
-	db := db.GetDB()
+	db := db.Init()
+	defer db.Close()
 	var (
 		user         User
 		isRegistered IsRegistered
@@ -61,7 +62,8 @@ func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
  * マッチング済みの場合、マッチング相手を返す
  */
 func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
-	db := db.GetDB()
+	db := db.Init()
+	defer db.Close()
 	var (
 		user      User
 		opponent  User
@@ -98,7 +100,8 @@ func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
  * マッチング済みの場合はマッチング相手を返す
 */
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
-	db := db.GetDB()
+	db := db.Init()
+	defer db.Close()
 	var (
 		candidateUsers []User
 		user           User
@@ -171,7 +174,8 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
  */
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
-	db := db.GetDB()
+	db := db.Init()
+	defer db.Close()
 	var (
 		postUser  PostUser
 		user      User
@@ -210,7 +214,8 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
  * UIDでユーザーを検索する
  */
 func (s UserService) GetUser(c *gin.Context) (User, error) {
-	db := db.GetDB()
+	db := db.Init()
+	defer db.Close()
 	var (
 		user User
 	)
@@ -234,7 +239,8 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
  * TODO: userBefore要るのか？？
  */
 func (s UserService) UpdateUser(c *gin.Context) (User, error) {
-	db := db.GetDB()
+	db := db.Init()
+	defer db.Close()
 	var (
 		putUser    PutUser
 		userBefore User
@@ -267,7 +273,8 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
  * UserCompatibleに保存する
  */
 func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
-	db := db.GetDB()
+	db := db.Init()
+	db.Close()
 	var (
 		infoCompatible InfoCompatible
 		uComb          UserCombination

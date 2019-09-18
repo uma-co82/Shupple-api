@@ -41,8 +41,9 @@ func (s S3Service) UploadToS3(image string, userName string) error {
 
 	res, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String("isozaki-images"),
-		Key:    aws.String("sample.png"),
-		Body:   wb,
+		// TODO: 直す
+		Key:  aws.String("sample.png"),
+		Body: wb,
 	})
 
 	if err != nil {

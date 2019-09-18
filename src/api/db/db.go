@@ -11,7 +11,7 @@ var (
 	err error
 )
 
-func Init() {
+func Init() *gorm.DB {
 	DBMS := "mysql"
 	USER := "root"
 	PASS := "shupple"
@@ -22,14 +22,10 @@ func Init() {
 	if err != nil {
 		panic(err.Error())
 	}
-	autoMigration()
-}
-
-func GetDB() *gorm.DB {
 	return db
 }
 
-func autoMigration() {
+func AutoMigration() {
 	db.AutoMigrate(&structs.User{})
 	db.AutoMigrate(&structs.UserInformation{})
 	db.AutoMigrate(&structs.UserCombination{})
