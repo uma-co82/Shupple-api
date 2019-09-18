@@ -1,2 +1,2 @@
 log/
-log/mysql/mysqld.log
+.env
