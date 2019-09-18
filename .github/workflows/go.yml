@@ -26,12 +26,6 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-        go get -u github.com/gin-gonic/gin
-        go get -u github.com/jinzhu/gorm
-        go get -u github.com/go-sql-driver/mysql
-        go get -u gopkg.in/go-playground/validator.v9
-        go get -u github.com/aws/aws-sdk-go
-        go get -u github.com/kelseyhightower/envconfig
 
     - name: Build
       run: go build -v .
