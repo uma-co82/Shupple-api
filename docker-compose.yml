@@ -10,6 +10,8 @@ services:
       - "8080:8080"
     volumes:
       - ./src/api:/go/src/api
+    env_file:
+      - ./docker/api/.env
   mysql:
     build: ./docker/db
     image: mysql:5.7

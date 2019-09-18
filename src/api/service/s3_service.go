@@ -25,7 +25,7 @@ type (
 func (s S3Service) UploadToS3(image string, userName string) error {
 	// 環境変数からS3Credential周りの設定を取得
 	var env Env
-	envconfig.Process("", &env)
+	_ = envconfig.Process("", &env)
 	fmt.Println(env)
 
 	sess := session.Must(session.NewSession(&aws.Config{
