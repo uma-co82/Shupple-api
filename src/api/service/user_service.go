@@ -193,7 +193,6 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 	if err := db.First(&user, "uid=?", uid).Error; err != nil {
 		return false, RaiseDBError()
 	}
-
 	if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
 		return false, RaiseDBError()
 	}
