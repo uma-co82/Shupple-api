@@ -9,7 +9,7 @@ import (
 type UserController struct{}
 
 /*
- * TODO: エラハンでError構造体をjsonで返す
+ * マッチング！
  */
 func (userController UserController) Shupple(c *gin.Context) {
 	var userService service.UserService
@@ -22,8 +22,22 @@ func (userController UserController) Shupple(c *gin.Context) {
 	}
 }
 
+/**
+ * マッチング解除
+ */
+func (userController UserController) CancelOpponent(c *gin.Context) {
+	var userService service.UserService
+	p, err := userService.CancelOpponent(c)
+
+	if err != nil {
+		c.JSON(500, err)
+	} else {
+		c.JSON(200, p)
+	}
+}
+
 /*
- * TODO: エラハンでError構造体をjsonで返す
+ * User登録
  */
 func (userController UserController) CreateUser(c *gin.Context) {
 	var userService service.UserService

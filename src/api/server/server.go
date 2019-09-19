@@ -16,7 +16,8 @@ func router() *gin.Engine {
 	uGroup := r.Group("/users")
 	{
 		ctrl := controller.UserController{}
-		uGroup.GET("", ctrl.Shupple)
+		uGroup.GET("/shupple", ctrl.Shupple)
+		uGroup.PUT("/shupple", ctrl.CancelOpponent)
 		uGroup.POST("", ctrl.CreateUser)
 		uGroup.PUT("", ctrl.UpdateUser)
 		uGroup.GET("/isRegistered", ctrl.IsRegisteredUser)

@@ -7,3 +7,7 @@ func (e *Error) Error() string {
 func RaiseError(code int, msg string, validationMessages []string) error {
 	return &Error{Code: code, Message: msg, ValidationMessage: validationMessages}
 }
+
+func RaiseDBError() error {
+	return &Error{Code: 500, Message: "DB Error Occur", ValidationMessage: nil}
+}

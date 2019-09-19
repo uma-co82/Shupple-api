@@ -170,6 +170,34 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 }
 
 /**
+ * マッチング解除
+ */
+func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
+	db := db.Init()
+	defer db.Close()
+	var (
+		user     User
+		opponent User
+	)
+
+	uid := c.Request.Header.Get("Uid")
+
+	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+		return false, RaiseDBError()
+	}
+
+	if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+		return false, RaiseDBError()
+	}
+
+	if err := db.Model(&user).Updates(map[string]interface{}{"is_combinaton": false, "opponent_uid": nil}).Error; err != nil {
+		return false, RaiseDBError()
+	}
+
+	return true, nil
+}
+
+/**
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
  */
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
