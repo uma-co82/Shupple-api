@@ -20,7 +20,7 @@ type User struct {
 	IsCombination   bool            `json:"isCombination"`
 	OpponentUid     string          `json:"opponentUid"`
 	UserInformation UserInformation `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_information"`
-	//UserCombinations []UserCombination `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_combinations"`
+	UserCombination UserCombination `json:"userCombination,omitempty"`
 }
 
 /*

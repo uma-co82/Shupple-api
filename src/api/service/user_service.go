@@ -85,6 +85,9 @@ func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
 		}
 		isMatched.IsMatched = true
 		tmp := structs.User(opponent)
+		if err := db.Where("uid IN (?, ?) AND opponent_uid IN (?, ?)", uid, opponent.UID, uid, opponent.UID).First(&tmp.UserCombination).Error; err != nil {
+			return isMatched, RaiseDBError()
+		}
 		isMatched.User = &tmp
 		return isMatched, nil
 	}
@@ -115,12 +118,16 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		return opponent, err
 	}
 
+	// Userが既にマッチング済みの場合、userCombinationを含めて返す(フロントで時間が必要な為)
 	if user.IsCombination == true {
 		if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
 			return opponent, err
 		}
 		if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
 			return opponent, err
+		}
+		if err := db.Where("uid IN (?, ?) AND opponent_uid IN (?, ?)", uid, opponent.UID, uid, opponent.UID).First(&opponent.UserCombination).Error; err != nil {
+			return opponent, RaiseDBError()
 		}
 		return opponent, nil
 	}
@@ -170,14 +177,15 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 }
 
 /**
- * マッチング解除
+ * マッチング後48時間経過していた場合、マッチング解除
  */
 func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 	db := db.Init()
 	defer db.Close()
 	var (
-		user     User
-		opponent User
+		user         User
+		opponent     User
+		updateTarget = map[string]interface{}{"is_combinaton": false, "opponent_uid": nil}
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -190,7 +198,10 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 		return false, RaiseDBError()
 	}
 
-	if err := db.Model(&user).Updates(map[string]interface{}{"is_combinaton": false, "opponent_uid": nil}).Error; err != nil {
+	if err := db.Model(&user).Updates(updateTarget).Error; err != nil {
+		return false, RaiseDBError()
+	}
+	if err := db.Model(&opponent).Updates(updateTarget).Error; err != nil {
 		return false, RaiseDBError()
 	}
 
