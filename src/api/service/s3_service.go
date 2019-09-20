@@ -26,7 +26,6 @@ func (s S3Service) UploadToS3(image string, userName string) error {
 	// 環境変数からS3Credential周りの設定を取得
 	var env Env
 	_ = envconfig.Process("", &env)
-	fmt.Println(env)
 
 	sess := session.Must(session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(env.S3AK, env.S3SK, ""),
@@ -41,9 +40,8 @@ func (s S3Service) UploadToS3(image string, userName string) error {
 
 	res, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String("isozaki-images"),
-		// TODO: 直す
-		Key:  aws.String("sample.png"),
-		Body: wb,
+		Key:    aws.String(userName + ".png"),
+		Body:   wb,
 	})
 
 	if err != nil {
