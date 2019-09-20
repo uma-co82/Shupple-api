@@ -19,8 +19,8 @@ type User struct {
 	ImageURL        string          `json:"imageUrl"`
 	IsCombination   bool            `json:"isCombination"`
 	OpponentUid     string          `json:"opponentUid"`
-	UserInformation UserInformation `gorm:"foreignkey:uid;association_foreignkey:uid" json:"user_information"`
-	UserCombination UserCombination `json:"userCombination,omitempty"`
+	UserInformation UserInformation `gorm:"foreignkey:uid;association_foreignkey:uid" json:"userInformation"`
+	UserCombination UserCombination `json:"userCombination"`
 }
 
 /*

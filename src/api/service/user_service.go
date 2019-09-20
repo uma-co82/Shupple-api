@@ -173,6 +173,8 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		return opponent, err
 	}
 
+	opponent.UserCombination = structs.UserCombination(uComb)
+
 	return opponent, nil
 }
 
@@ -185,7 +187,7 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 	var (
 		user         User
 		opponent     User
-		updateTarget = map[string]interface{}{"is_combinaton": false, "opponent_uid": nil}
+		updateTarget = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
 	)
 
 	uid := c.Request.Header.Get("Uid")
