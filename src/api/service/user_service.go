@@ -226,7 +226,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		return user, err
 	}
 
-	if err := s3Service.UploadToS3(postUser.Image, postUser.NickName); err != nil {
+	if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
 		return user, err
 	}
 
@@ -235,7 +235,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	}
 
 	user.setUserFromPost(postUser)
-	user.ImageURL = postUser.NickName + ".png"
+	user.ImageURL = postUser.UID + ".png"
 	err := user.calcAge(postUser.BirthDay)
 	if err != nil {
 		return user, err
