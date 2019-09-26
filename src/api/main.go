@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./db"
-	"./server"
+	"github.com/uma-co82/Shupple-api/src/api/db"
+	"github.com/uma-co82/Shupple-api/src/api/server"
 )
 
 func main() {
