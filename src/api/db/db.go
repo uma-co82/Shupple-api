@@ -1,9 +1,10 @@
 package db
 
 import (
-	"../structs"
+	//"../structs"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/uma-co82/Shupple-api/src/api/structs"
 )
 
 var (

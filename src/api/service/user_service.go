@@ -1,9 +1,11 @@
 package service
 
 import (
-	"../db"
-	"../structs"
+	//"../db"
+	//"../structs"
 	"github.com/gin-gonic/gin"
+	"github.com/uma-co82/Shupple-api/src/api/db"
+	"github.com/uma-co82/Shupple-api/src/api/structs"
 	"math/rand"
 	"time"
 )

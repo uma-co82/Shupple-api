@@ -1,7 +1,8 @@
 package service
 
 import (
-	"../structs"
+	//"../structs"
+	"github.com/uma-co82/Shupple-api/src/api/structs"
 	"gopkg.in/go-playground/validator.v9"
 	"strconv"
 	"time"

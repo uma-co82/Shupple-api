@@ -1,8 +1,9 @@
 package server
 
 import (
-	"../controller"
+	//"../controller"
 	"github.com/gin-gonic/gin"
+	"github.com/uma-co82/Shupple-api/src/api/controller"
 )
 
 func Init() {

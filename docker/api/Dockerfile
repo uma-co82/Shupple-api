@@ -12,8 +12,7 @@ RUN go get -u github.com/gin-gonic/gin \
   && go get -u gopkg.in/go-playground/validator.v9 \
   && go get -u github.com/aws/aws-sdk-go \
   && go get -u github.com/kelseyhightower/envconfig \
-  # 完成したものからimport先を変更
-#  && go get -u github.com/uma-co82/Shupple-api/src/api \
+  && go get -u github.com/uma-co82/Shupple-api/src/api \
   && apt-get update -qq \
   && apt-get install -y mariadb-client vim
 

@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"../service"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/uma-co82/Shupple-api/src/api/service"
 )
 
 type UserController struct{}
