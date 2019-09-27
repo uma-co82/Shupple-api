@@ -58,4 +58,5 @@ type Error struct {
 	Code              int      `json:"code"`
 	Message           string   `json:"message"`
 	ValidationMessage []string `json:"validationMessage"`
+	FrontMessage      string   `json:"frontMessage"`
 }
