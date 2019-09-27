@@ -108,7 +108,7 @@ func (postUser *PostUser) checkPostUserValidate() error {
 
 			switch fieldName {
 			case "NickName":
-				var tag = err.Tag()
+				tag := err.Tag()
 				switch tag {
 				case "required":
 					errMsg = "NickName is required"
@@ -126,7 +126,7 @@ func (postUser *PostUser) checkPostUserValidate() error {
 			case "OpponentResidence":
 				errMsg = "OpponentResidence is required"
 			case "Hobby":
-				var tag = err.Tag()
+				tag := err.Tag()
 				switch tag {
 				case "required":
 					errMsg = "Hobby is required"
