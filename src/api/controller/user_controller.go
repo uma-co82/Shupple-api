@@ -15,7 +15,7 @@ func (userController UserController) Shupple(c *gin.Context) {
 	p, err := userService.GetOpponent(c)
 
 	if err != nil {
-		c.JSON(404, err)
+		c.JSON(err.(*service.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -29,7 +29,7 @@ func (userController UserController) CancelOpponent(c *gin.Context) {
 	p, err := userService.CancelOpponent(c)
 
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(err.(*service.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -43,7 +43,7 @@ func (userController UserController) CreateUser(c *gin.Context) {
 	p, err := userService.CreateUser(c)
 
 	if err != nil {
-		c.JSON(400, err)
+		c.JSON(err.(*service.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -57,7 +57,7 @@ func (userController UserController) UpdateUser(c *gin.Context) {
 	p, err := userService.UpdateUser(c)
 
 	if err != nil {
-		c.JSON(400, err)
+		c.JSON(err.(*service.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -86,7 +86,7 @@ func (userController UserController) IsMatchedUser(c *gin.Context) {
 	p, err := userService.IsMatchedUser(c)
 
 	if err != nil {
-		// TODO: エラハン
+		c.JSON(err.(*service.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -100,7 +100,7 @@ func (userController UserController) GetUser(c *gin.Context) {
 	p, err := userService.GetUser(c)
 
 	if err != nil {
-		c.AbortWithStatus(400)
+		c.JSON(err.(*service.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -114,7 +114,7 @@ func (userController UserController) CreateCompatible(c *gin.Context) {
 	p, err := userService.CreateCompatible(c)
 
 	if err != nil {
-		c.AbortWithStatus(400)
+		c.JSON(err.(*service.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
