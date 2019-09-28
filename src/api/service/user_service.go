@@ -284,6 +284,7 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 		putUser    PutUser
 		userBefore User
 		userAfter  User
+		s3Service  S3Service
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -292,11 +293,15 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 		return userAfter, err
 	}
 	if err := putUser.checkPutUserValidate(); err != nil {
-		return userAfter, RaiseDBError()
+		return userAfter, err
 	}
 
 	if err := db.First(&userAfter, "uid=?", uid).Error; err != nil {
 		return userAfter, RaiseDBError()
+	}
+
+	if err := s3Service.UploadToS3(putUser.Image, uid); err != nil {
+		return userAfter, err
 	}
 
 	userAfter.setUserFromPut(putUser)

@@ -27,6 +27,7 @@ type PostUser struct {
  */
 type PutUser struct {
 	NickName          string `json:"nickName,omitempty" validate:"gte=1,lt=10"`
+	Image             string `json:"image"`
 	OpponentAgeLow    int    `json:"opponentAgeLow,omitempty"`
 	OpponentAgeUpper  int    `json:"opponentAgeUpper,omitempty"`
 	OpponentResidence int    `json:"opponentResidence,omitempty"`
