@@ -1,7 +1,6 @@
 package service
 
 import (
-	//"../structs"
 	"github.com/uma-co82/Shupple-api/src/api/structs"
 	"gopkg.in/go-playground/validator.v9"
 	"strconv"
@@ -65,16 +64,16 @@ func (user *User) setUserFromPost(postUser PostUser) {
 		Job:               postUser.Job, Personality: postUser.Personality}
 }
 func (user *User) setUserFromPut(putUser PutUser) {
+	var uInfo structs.UserInformation
 	user.NickName = putUser.NickName
-	user.UserInformation = structs.UserInformation{
-		OpponentAgeLow:    putUser.OpponentAgeLow,
-		OpponentAgeUpper:  putUser.OpponentAgeUpper,
-		OpponentResidence: putUser.OpponentResidence,
-		Hobby:             putUser.Hobby,
-		Residence:         putUser.Residence,
-		Job:               putUser.Job,
-		Personality:       putUser.Personality,
-	}
+	uInfo.OpponentAgeLow = putUser.OpponentAgeLow
+	uInfo.OpponentAgeUpper = putUser.OpponentAgeUpper
+	uInfo.OpponentResidence = putUser.OpponentResidence
+	uInfo.Hobby = putUser.Hobby
+	uInfo.Residence = putUser.Residence
+	uInfo.Job = putUser.Job
+	uInfo.Personality = putUser.Personality
+	user.UserInformation = uInfo
 }
 
 /*
