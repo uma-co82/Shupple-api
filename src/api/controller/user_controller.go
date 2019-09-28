@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/uma-co82/Shupple-api/src/api/service"
 )
@@ -59,7 +58,6 @@ func (userController UserController) UpdateUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(400, err)
-		fmt.Printf("******************* %v", err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -73,7 +71,7 @@ func (userController UserController) IsRegisteredUser(c *gin.Context) {
 	p, err := userService.IsRegisterdUser(c)
 
 	if err != nil {
-		// TODO: エラハン
+		c.JSON(err.(*service.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
