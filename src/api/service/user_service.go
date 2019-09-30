@@ -312,13 +312,33 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	return userBefore, nil
 }
 
+func (s UserService) SoftDeleteUser(c *gin.Context) error {
+	db := db.Init()
+	defer db.Close()
+	var (
+		user User
+	)
+
+	uid := c.Request.Header.Get("Uid")
+
+	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+		return RaiseDBError()
+	}
+
+	if err := db.Delete(&user).Error; err != nil {
+		return RaiseDBError()
+	}
+
+	return nil
+}
+
 /**
  * n通以上メッセージのやり取りがあった場合に相性が良い組み合わせと考え
  * UserCompatibleに保存する
  */
 func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 	db := db.Init()
-	db.Close()
+	defer db.Close()
 	var (
 		infoCompatible InfoCompatible
 		uComb          UserCombination

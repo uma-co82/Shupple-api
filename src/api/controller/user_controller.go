@@ -107,6 +107,12 @@ func (userController UserController) GetUser(c *gin.Context) {
 }
 
 /**
+ * User論理削除
+ */
+func (userController UserController) SoftDeleteUser(c *gin.Context) {
+}
+
+/**
  * 相性が良い条件の組み合わせを保存
  */
 func (userController UserController) CreateCompatible(c *gin.Context) {
