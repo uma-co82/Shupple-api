@@ -116,7 +116,7 @@ func (userController UserController) SoftDeleteUser(c *gin.Context) {
 	if err != nil {
 		c.JSON(err.(*service.Error).Code, err)
 	} else {
-		c.JSON(200, nil)
+		c.JSON(200, "ok")
 	}
 }
 

@@ -1,10 +1,8 @@
 FROM golang:latest
 
 COPY src/api /go/src/api
-#COPY src/api /api
 
 WORKDIR /go/src/api/
-#WORKDIR /api/
 
 RUN go get -u github.com/gin-gonic/gin \
   && go get -u github.com/jinzhu/gorm \
