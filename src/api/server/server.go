@@ -21,6 +21,7 @@ func router() *gin.Engine {
 		uGroup.PUT("/shupple", ctrl.CancelOpponent)
 		uGroup.POST("", ctrl.CreateUser)
 		uGroup.PUT("", ctrl.UpdateUser)
+		uGroup.DELETE("", ctrl.SoftDeleteUser)
 		uGroup.GET("/isRegistered", ctrl.IsRegisteredUser)
 		uGroup.GET("/isMatched", ctrl.IsMatchedUser)
 		uGroup.GET("/select", ctrl.GetUser)

@@ -110,6 +110,14 @@ func (userController UserController) GetUser(c *gin.Context) {
  * User論理削除
  */
 func (userController UserController) SoftDeleteUser(c *gin.Context) {
+	var userService service.UserService
+	err := userService.SoftDeleteUser(c)
+
+	if err != nil {
+		c.JSON(err.(*service.Error).Code, err)
+	} else {
+		c.JSON(200, nil)
+	}
 }
 
 /**
