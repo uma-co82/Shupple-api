@@ -87,7 +87,7 @@ func (uCombi *UserCombination) setUserCombination(uid, opponentUid string) {
 /*
  * InfoCompatibleの詰め替え
  */
-func (infoCompatible *InfoCompatible) setInfoCompatible(infoID, otherID uint) {
+func (infoCompatible *InfoCompatible) setInfoCompatible(infoID, otherID string) {
 	infoCompatible.InfoID = infoID
 	infoCompatible.OtherID = otherID
 }

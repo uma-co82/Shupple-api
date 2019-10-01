@@ -1,8 +1,6 @@
 package service
 
 import (
-	//"../db"
-	//"../structs"
 	"github.com/gin-gonic/gin"
 	"github.com/uma-co82/Shupple-api/src/api/db"
 	"github.com/uma-co82/Shupple-api/src/api/structs"
@@ -393,7 +391,7 @@ func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 		return infoCompatible, RaiseDBError()
 	}
 
-	infoCompatible.setInfoCompatible(uInfo.ID, otherUinfo.ID)
+	infoCompatible.setInfoCompatible(uInfo.UID, otherUinfo.UID)
 
 	if err := tx.Create(&infoCompatible).Error; err != nil {
 		tx.Rollback()
