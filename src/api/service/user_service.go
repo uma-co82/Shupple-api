@@ -40,6 +40,7 @@ func getRandUser(u []User) User {
  */
 func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		user         User
@@ -48,14 +49,15 @@ func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
 
 	uid := c.Request.Header.Get("Uid")
 
-	if db.First(&user, "uid=?", uid).RecordNotFound() {
+	if tx.First(&user, "uid=?", uid).RecordNotFound() {
+		tx.Rollback()
 		isRegistered.IsRegistered = false
 		return isRegistered, nil
 	}
 
 	isRegistered.IsRegistered = true
 
-	return isRegistered, nil
+	return isRegistered, tx.Commit().Error
 }
 
 /**
@@ -64,6 +66,7 @@ func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
  */
 func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		user      User
@@ -73,20 +76,24 @@ func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
 
 	uid := c.Request.Header.Get("uid")
 
-	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+		tx.Rollback()
 		return isMatched, RaiseDBError()
 	}
 
 	if user.IsCombination == true {
-		if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+		if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+			tx.Rollback()
 			return isMatched, RaiseDBError()
 		}
-		if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
+		if err := tx.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
+			tx.Rollback()
 			return isMatched, RaiseDBError()
 		}
 		isMatched.IsMatched = true
 		tmp := structs.User(opponent)
-		if err := db.Where("uid IN (?, ?) AND opponent_uid IN (?, ?)", uid, opponent.UID, uid, opponent.UID).First(&tmp.UserCombination).Error; err != nil {
+		if err := tx.Where("uid IN (?, ?) AND opponent_uid IN (?, ?)", uid, opponent.UID, uid, opponent.UID).First(&tmp.UserCombination).Error; err != nil {
+			tx.Rollback()
 			return isMatched, RaiseDBError()
 		}
 		isMatched.User = &tmp
@@ -95,16 +102,16 @@ func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
 
 	isMatched.IsMatched = false
 	isMatched.User = nil
-	return isMatched, nil
+	return isMatched, tx.Commit().Error
 }
 
-/*
-*
+/**
  * 異性かつ希望の年齢層のUserをランダムに1件返す
  * マッチング済みの場合はマッチング相手を返す
-*/
+ */
 func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		candidateUsers []User
@@ -115,25 +122,30 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+		tx.Rollback()
 		return opponent, RaiseDBError()
 	}
 
 	// Userが既にマッチング済みの場合、userCombinationを含めて返す(フロントで時間が必要な為)
 	if user.IsCombination == true {
-		if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+		if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+			tx.Rollback()
 			return opponent, RaiseDBError()
 		}
-		if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
+		if err := tx.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
+			tx.Rollback()
 			return opponent, RaiseDBError()
 		}
-		if err := db.Where("uid IN (?, ?) AND opponent_uid IN (?, ?)", uid, opponent.UID, uid, opponent.UID).First(&opponent.UserCombination).Error; err != nil {
+		if err := tx.Where("uid IN (?, ?) AND opponent_uid IN (?, ?)", uid, opponent.UID, uid, opponent.UID).First(&opponent.UserCombination).Error; err != nil {
+			tx.Rollback()
 			return opponent, RaiseDBError()
 		}
 		return opponent, nil
 	}
 
-	if err := db.Model(&user).Related(&user.UserInformation, "UserInformation").Error; err != nil {
+	if err := tx.Model(&user).Related(&user.UserInformation, "UserInformation").Error; err != nil {
+		tx.Rollback()
 		return opponent, RaiseDBError()
 	}
 
@@ -142,7 +154,8 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	// 条件に合うユーザを検索
 	// 条件にあうかつ、UserCombinationのOpponentUIDにないと言う条件で絞る
 	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
-	if err := db.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid=?) AND uid IN (select uid from user_informations where residence=?)", user.UserInformation.OpponentAgeLow, user.UserInformation.OpponentAgeUpper, opponentSex, false, uid, user.UserInformation.OpponentResidence).Find(&candidateUsers).Error; err != nil {
+	if err := tx.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid=?) AND uid IN (select uid from user_informations where residence=?)", user.UserInformation.OpponentAgeLow, user.UserInformation.OpponentAgeUpper, opponentSex, false, uid, user.UserInformation.OpponentResidence).Find(&candidateUsers).Error; err != nil {
+		tx.Rollback()
 		return opponent, RaiseDBError()
 	}
 
@@ -158,25 +171,29 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	userAfter.OpponentUid = opponent.UID
 	userAfter.IsCombination = true
 
-	if err := db.Model(&opponent).Update(&opponentAfter).Error; err != nil {
+	if err := tx.Model(&opponent).Update(&opponentAfter).Error; err != nil {
+		tx.Rollback()
 		return opponent, RaiseDBError()
 	}
-	if err := db.Model(&user).Update(&userAfter).Error; err != nil {
+	if err := tx.Model(&user).Update(&userAfter).Error; err != nil {
+		tx.Rollback()
 		return opponent, RaiseDBError()
 	}
 
-	if err := db.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
+	if err := tx.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
+		tx.Rollback()
 		return opponent, RaiseDBError()
 	}
 
 	uComb.setUserCombination(user.UID, opponent.UID)
-	if err := db.Create(&uComb).Error; err != nil {
+	if err := tx.Create(&uComb).Error; err != nil {
+		tx.Rollback()
 		return opponent, RaiseDBError()
 	}
 
 	opponent.UserCombination = structs.UserCombination(uComb)
 
-	return opponent, nil
+	return opponent, tx.Commit().Error
 }
 
 /**
@@ -184,6 +201,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
  */
 func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		user         User
@@ -193,21 +211,25 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+		tx.Rollback()
 		return false, RaiseDBError()
 	}
-	if err := db.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
-		return false, RaiseDBError()
-	}
-
-	if err := db.Model(&user).Updates(updateTarget).Error; err != nil {
-		return false, RaiseDBError()
-	}
-	if err := db.Model(&opponent).Updates(updateTarget).Error; err != nil {
+	if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+		tx.Rollback()
 		return false, RaiseDBError()
 	}
 
-	return true, nil
+	if err := tx.Model(&user).Updates(updateTarget).Error; err != nil {
+		tx.Rollback()
+		return false, RaiseDBError()
+	}
+	if err := tx.Model(&opponent).Updates(updateTarget).Error; err != nil {
+		tx.Rollback()
+		return false, RaiseDBError()
+	}
+
+	return true, tx.Commit().Error
 }
 
 /**
@@ -215,6 +237,7 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
  */
 func (s UserService) CreateUser(c *gin.Context) (User, error) {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		postUser  PostUser
@@ -242,11 +265,12 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
 		return user, err
 	}
 
-	if err := db.Create(&user).Error; err != nil {
+	if err := tx.Create(&user).Error; err != nil {
+		tx.Rollback()
 		return user, RaiseDBError()
 	}
 
-	return user, nil
+	return user, tx.Commit().Error
 }
 
 /**
@@ -254,6 +278,7 @@ func (s UserService) CreateUser(c *gin.Context) (User, error) {
  */
 func (s UserService) GetUser(c *gin.Context) (User, error) {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		user User
@@ -261,15 +286,17 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+		tx.Rollback()
 		return user, RaiseDBError()
 	}
 
-	if err := db.Model(&user).Related(&user.UserInformation, "UserInformation").Error; err != nil {
+	if err := tx.Model(&user).Related(&user.UserInformation, "UserInformation").Error; err != nil {
+		tx.Rollback()
 		return user, RaiseDBError()
 	}
 
-	return user, nil
+	return user, tx.Commit().Error
 }
 
 /**
@@ -279,6 +306,7 @@ func (s UserService) GetUser(c *gin.Context) (User, error) {
  */
 func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		putUser    PutUser
@@ -296,7 +324,8 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 		return userAfter, err
 	}
 
-	if err := db.First(&userAfter, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&userAfter, "uid=?", uid).Error; err != nil {
+		tx.Rollback()
 		return userAfter, RaiseDBError()
 	}
 
@@ -305,15 +334,17 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	}
 
 	userAfter.setUserFromPut(putUser)
-	if err := db.Model(&userBefore).Update(&userAfter).Error; err != nil {
+	if err := tx.Model(&userBefore).Update(&userAfter).Error; err != nil {
+		tx.Rollback()
 		return userAfter, RaiseDBError()
 	}
 
-	return userBefore, nil
+	return userBefore, tx.Commit().Error
 }
 
 func (s UserService) SoftDeleteUser(c *gin.Context) error {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		user User
@@ -321,15 +352,17 @@ func (s UserService) SoftDeleteUser(c *gin.Context) error {
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := db.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+		tx.Rollback()
 		return RaiseDBError()
 	}
 
-	if err := db.Delete(&user).Error; err != nil {
+	if err := tx.Delete(&user).Error; err != nil {
+		tx.Rollback()
 		return RaiseDBError()
 	}
 
-	return nil
+	return tx.Commit().Error
 }
 
 /**
@@ -338,6 +371,7 @@ func (s UserService) SoftDeleteUser(c *gin.Context) error {
  */
 func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 	db := db.Init()
+	tx := db.Begin()
 	defer db.Close()
 	var (
 		infoCompatible InfoCompatible
@@ -350,17 +384,20 @@ func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 		return infoCompatible, err
 	}
 
-	if err := db.First(&uInfo, "uid=?", uComb.UID).Error; err != nil {
+	if err := tx.First(&uInfo, "uid=?", uComb.UID).Error; err != nil {
+		tx.Rollback()
 		return infoCompatible, RaiseDBError()
 	}
-	if err := db.First(&otherUinfo, "uid=?", uComb.OpponentUID).Error; err != nil {
+	if err := tx.First(&otherUinfo, "uid=?", uComb.OpponentUID).Error; err != nil {
+		tx.Rollback()
 		return infoCompatible, RaiseDBError()
 	}
 
-	//infoCompatible.setInfoCompatible(uInfo.ID, otherUinfo.ID)
+	infoCompatible.setInfoCompatible(uInfo.ID, otherUinfo.ID)
 
-	if err := db.Create(&infoCompatible).Error; err != nil {
+	if err := tx.Create(&infoCompatible).Error; err != nil {
+		tx.Rollback()
 		return infoCompatible, RaiseDBError()
 	}
-	return infoCompatible, nil
+	return infoCompatible, tx.Commit().Error
 }
