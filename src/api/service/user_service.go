@@ -360,7 +360,12 @@ func (s UserService) SoftDeleteUser(c *gin.Context) error {
 		return RaiseDBError()
 	}
 
-	return tx.Commit().Error
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return RaiseDBError()
+	}
+
+	return nil
 }
 
 /**
@@ -397,5 +402,11 @@ func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 		tx.Rollback()
 		return infoCompatible, RaiseDBError()
 	}
-	return infoCompatible, tx.Commit().Error
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return infoCompatible, RaiseDBError()
+	}
+
+	return infoCompatible, nil
 }
