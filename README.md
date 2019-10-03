@@ -26,6 +26,38 @@
 ### 4. Docker-compose up
 `docker-compose up`
 
+## AWS EC2 Settings
+[reference](http://kitakitabauer.hatenablog.com/entry/2017/10/17/215316)
+
+### 1. Install go
+
+`sudo yum update -y`
+`mkdir ~/tmp; cd ~/tmp`
+`wget https://storage.googleapis.com/golang/go1.12.3.linux-amd64.tar.gz`
+`tar zxvf go1.12.3.linux-amd64.tar.gz`
+`sudo mv go /usr/local/`
+`sudo ln -s /usr/local/go/bin/go /usr/bin/go`
+`sudo ln -s /usr/local/go/bin/go /usr/local/bin/go `
+`sudo ln -s /usr/local/go/bin/godoc /usr/local/bin/godoc`
+`sudo ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt`
+
+### 2. SetUp GoEnv
+
+.bash_profile
+```
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+```
+```
+export S3AK="s3accesskey"
+export S3SK="s3secretkey"
+```
+
+### 3. go get
+
+`sudo yum install -y git`
+`go get -u github.com/uma-co82/Shupple-api/src/api`
+
 ## License
 
 #### Members
