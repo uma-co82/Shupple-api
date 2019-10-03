@@ -39,7 +39,7 @@ func (s S3Service) UploadToS3(image string, uid string) error {
 	wb.Write(data)
 
 	res, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket:      aws.String("isozaki-images"),
+		Bucket:      aws.String("shupple-user-images"),
 		Key:         aws.String("images/" + uid + ".png"),
 		Body:        wb,
 		ContentType: aws.String("image/png"),
