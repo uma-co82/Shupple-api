@@ -14,6 +14,9 @@ func Init() {
 func router() *gin.Engine {
 	r := gin.Default()
 
+	/**
+	 * ヘルスチェクに対するレスポンス
+	 */
 	hGroup := r.Group("/")
 	{
 		ctrl := controller.HealthCheckController{}

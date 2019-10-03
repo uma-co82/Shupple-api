@@ -6,6 +6,9 @@ import (
 
 type HealthCheckController struct{}
 
+/**
+ * ヘルスチェックに対して200を返す
+ */
 func (healthCheckController HealthCheckController) HealthCheck(c *gin.Context) {
 	c.JSON(200, "ok")
 }
