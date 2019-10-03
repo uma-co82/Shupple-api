@@ -14,6 +14,12 @@ func Init() {
 func router() *gin.Engine {
 	r := gin.Default()
 
+	hGroup := r.Group("/")
+	{
+		ctrl := controller.HealthCheckController{}
+		hGroup.GET("", ctrl.HealthCheck)
+	}
+
 	uGroup := r.Group("/users")
 	{
 		ctrl := controller.UserController{}
