@@ -355,6 +355,18 @@ func (s UserService) SoftDeleteUser(c *gin.Context) error {
 		return RaiseDBError()
 	}
 
+	if user.IsCombination == true {
+		var opponent User
+		if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+			tx.Rollback()
+			return RaiseDBError()
+		}
+		if err := db.Model(&opponent).Update(map[string]interface{}{"is_combination": false, "opponent_uid": nil}).Error; err != nil {
+			tx.Rollback()
+			return RaiseDBError()
+		}
+	}
+
 	if err := tx.Delete(&user).Error; err != nil {
 		tx.Rollback()
 		return RaiseDBError()
