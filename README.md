@@ -31,15 +31,33 @@
 
 ### 1. Install go
 
-`sudo yum update -y`
-`mkdir ~/tmp; cd ~/tmp`
-`wget https://storage.googleapis.com/golang/go1.12.3.linux-amd64.tar.gz`
-`tar zxvf go1.12.3.linux-amd64.tar.gz`
-`sudo mv go /usr/local/`
-`sudo ln -s /usr/local/go/bin/go /usr/bin/go`
-`sudo ln -s /usr/local/go/bin/go /usr/local/bin/go `
-`sudo ln -s /usr/local/go/bin/godoc /usr/local/bin/godoc`
-`sudo ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt`
+```
+sudo yum update -y
+```
+```
+mkdir ~/tmp; cd ~/tmp
+```
+```
+wget https://storage.googleapis.com/golang/go1.12.3.linux-amd64.tar.gz
+```
+```
+tar zxvf go1.12.3.linux-amd64.tar.gz
+```
+```
+sudo mv go /usr/local/
+```
+```
+sudo ln -s /usr/local/go/bin/go /usr/bin/go
+```
+```
+sudo ln -s /usr/local/go/bin/go /usr/local/bin/go
+```
+```
+sudo ln -s /usr/local/go/bin/godoc /usr/local/bin/godoc
+```
+```
+sudo ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt
+```
 
 ### 2. SetUp GoEnv
 
@@ -55,9 +73,15 @@ export S3SK="s3secretkey"
 
 ### 3. go get
 
-`sudo yum install -y git`
-`go get -u github.com/uma-co82/Shupple-api/src/api`
-`nohup go run main.go  >> nohup.out 2>&1 < /dev/null &`
+```
+sudo yum install -y git
+```
+```
+go get -u github.com/uma-co82/Shupple-api/src/api
+```
+```
+nohup go run main.go  >> nohup.out 2>&1 < /dev/null &
+```
 
 ## License
 
