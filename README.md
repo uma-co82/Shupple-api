@@ -57,6 +57,7 @@ export S3SK="s3secretkey"
 
 `sudo yum install -y git`
 `go get -u github.com/uma-co82/Shupple-api/src/api`
+`nohup go run main.go  >> nohup.out 2>&1 < /dev/null &`
 
 ## License
 
