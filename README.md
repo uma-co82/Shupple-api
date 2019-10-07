@@ -6,7 +6,7 @@
 
 ## What Run
 
-* Go
+* Go 1.12.3
 * gin
 * gorm
 * Docker
