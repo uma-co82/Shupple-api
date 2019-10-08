@@ -37,5 +37,11 @@ func router() *gin.Engine {
 		uGroup.POST("/compatible", ctrl.CreateCompatible)
 	}
 
+	aGroup := r.Group("/admin")
+	{
+		ctrl := controller.AdminController{}
+		aGroup.GET("/users", ctrl.GetAllUser)
+	}
+
 	return r
 }

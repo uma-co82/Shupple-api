@@ -10,7 +10,7 @@ import (
  *                         ADMIN                            *
  ************************************************************/
 type PASS struct {
-	Admin string
+	ADMIN string
 }
 
 /**
@@ -22,7 +22,7 @@ func (s UserService) GetAllUser(c *gin.Context) ([]User, error) {
 	var env PASS
 	_ = envconfig.Process("", &env)
 
-	if uid != env.Admin {
+	if uid != env.ADMIN {
 		return nil, RaiseError(403, "Forbidden", nil)
 	}
 
