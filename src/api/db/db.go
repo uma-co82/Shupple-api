@@ -7,6 +7,7 @@ import (
 	//"../structs"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/uma-co82/Shupple-api/src/api/structs"
 )
 
@@ -15,12 +16,22 @@ var (
 	err error
 )
 
+type DBENV struct {
+	MS   string
+	USER string
+	PASS string
+	PRT  string
+	DBN  string
+}
+
 func Init() *gorm.DB {
-	DBMS := "mysql"
-	USER := "root"
-	PASS := "shupple"
-	PROTOCOL := "tcp(mysql:3306)"
-	DBNAME := "shupple"
+	var env DBENV
+	_ = envconfig.Process("", &env)
+	DBMS := env.MS
+	USER := env.USER
+	PASS := env.PASS
+	PROTOCOL := "tcp(" + env.PRT + ":3306)"
+	DBNAME := env.DBN
 	CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?parseTime=true"
 	db, err = gorm.Open(DBMS, CONNECT)
 	if err != nil {

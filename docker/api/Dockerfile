@@ -3,6 +3,7 @@ FROM golang:latest
 COPY src/api /go/src/api
 
 WORKDIR /go/src/api/
+#WORKDIR /go/src/github.com/uma-co82/Shupple-api/src/api/
 
 RUN go get -u github.com/gin-gonic/gin \
   && go get -u github.com/jinzhu/gorm \
