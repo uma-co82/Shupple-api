@@ -4,7 +4,6 @@
 package db
 
 import (
-	//"../structs"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/kelseyhightower/envconfig"
@@ -17,21 +16,21 @@ var (
 )
 
 type DBENV struct {
-	MS   string
-	USER string
-	PASS string
-	PRT  string
-	DBN  string
+	SHUPPLEDBMS      string
+	SHUPPLEDBUSER    string
+	SHUPPLEDBPASS    string
+	SHUPPLEDBPRTOCOL string
+	SHUPPLEDBNAME    string
 }
 
 func Init() *gorm.DB {
 	var env DBENV
 	_ = envconfig.Process("", &env)
-	DBMS := env.MS
-	USER := env.USER
-	PASS := env.PASS
-	PROTOCOL := "tcp(" + env.PRT + ":3306)"
-	DBNAME := env.DBN
+	DBMS := env.SHUPPLEDBMS
+	USER := env.SHUPPLEDBUSER
+	PASS := env.SHUPPLEDBPASS
+	PROTOCOL := "tcp(" + env.SHUPPLEDBPRTOCOL + ":3306)"
+	DBNAME := env.SHUPPLEDBNAME
 	CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?parseTime=true"
 	db, err = gorm.Open(DBMS, CONNECT)
 	if err != nil {
