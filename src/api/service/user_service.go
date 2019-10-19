@@ -10,16 +10,17 @@ import (
 )
 
 type (
-	UserService     struct{}
-	User            structs.User
-	UserInformation structs.UserInformation
-	UserCombination structs.UserCombination
-	InfoCompatible  structs.InfoCompatible
-	Error           structs.Error
-	PostUser        structs.PostUser
-	PutUser         structs.PutUser
-	IsRegistered    structs.IsRegistered
-	IsMatched       structs.IsMatched
+	UserService      struct{}
+	User             structs.User
+	UserInformation  structs.UserInformation
+	UserCombination  structs.UserCombination
+	InfoCompatible   structs.InfoCompatible
+	Error            structs.Error
+	PostUser         structs.PostUser
+	PutUser          structs.PutUser
+	IsRegistered     structs.IsRegistered
+	IsMatched        structs.IsMatched
+	UnauthorizedUser structs.UnauthorizedUser
 )
 
 /**
@@ -368,6 +369,61 @@ func (s UserService) SoftDeleteUser(c *gin.Context) error {
 	}
 
 	if err := tx.Delete(&user).Error; err != nil {
+		tx.Rollback()
+		return RaiseDBError()
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return RaiseDBError()
+	}
+
+	return nil
+}
+
+/**
+ * ユーザーからの報告, ブロック機能
+ */
+func (s UserService) CreateUnauthorizedUser(c *gin.Context) error {
+	db := db.Init()
+	tx := db.Begin()
+	defer db.Close()
+	var (
+		user            User
+		opponent        User
+		unauthorizedUid UnauthorizedUser
+		updateTarget    = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
+	)
+
+	uid := c.Request.Header.Get("Uid")
+
+	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+		tx.Rollback()
+		return RaiseDBError()
+	}
+
+	if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+		tx.Rollback()
+		return RaiseDBError()
+	}
+
+	if err := tx.Model(&user).Updates(updateTarget).Error; err != nil {
+		tx.Rollback()
+		return RaiseDBError()
+	}
+	if err := tx.Model(&opponent).Updates(updateTarget).Error; err != nil {
+		tx.Rollback()
+		return RaiseDBError()
+	}
+
+	unauthorizedUid.UID = opponent.UID
+	if c.Request.Header.Get("Block") == "true" {
+		unauthorizedUid.Block = true
+	} else {
+		unauthorizedUid.Block = false
+	}
+
+	if err := tx.Create(&unauthorizedUid).Error; err != nil {
 		tx.Rollback()
 		return RaiseDBError()
 	}

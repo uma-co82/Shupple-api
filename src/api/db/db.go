@@ -41,4 +41,5 @@ func AutoMigration() {
 	db.AutoMigrate(&structs.UserInformation{})
 	db.AutoMigrate(&structs.UserCombination{})
 	db.AutoMigrate(&structs.InfoCompatible{})
+	db.AutoMigrate(&structs.UnauthorizedUser{})
 }

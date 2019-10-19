@@ -57,3 +57,12 @@ type InfoCompatible struct {
 	InfoID  string `json:"infoID"`
 	OtherID string `json:"otherID"`
 }
+
+/**
+ * ユーザーから報告があったユーザーID
+ */
+type UnauthorizedUser struct {
+	gorm.Model
+	UID   string
+	Block bool
+}

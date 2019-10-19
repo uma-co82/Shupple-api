@@ -121,6 +121,20 @@ func (userController UserController) SoftDeleteUser(c *gin.Context) {
 }
 
 /**
+ * Userからのブロック、報告機能
+ */
+func (userController UserController) UnauthorizedUser(c *gin.Context) {
+	var userService service.UserService
+	err := userService.CreateUnauthorizedUser(c)
+
+	if err != nil {
+		c.JSON(err.(*service.Error).Code, err)
+	} else {
+		c.JSON(200, "ok")
+	}
+}
+
+/**
  * 相性が良い条件の組み合わせを保存
  */
 func (userController UserController) CreateCompatible(c *gin.Context) {
