@@ -13,7 +13,7 @@ RUN go get -u github.com/gin-gonic/gin \
   && go get -u github.com/kelseyhightower/envconfig \
   && go get -u github.com/carlescere/scheduler \
   && go get -u github.com/bamzi/jobrunner \
-#  && go get -u github.com/uma-co82/Shupple-api/src/api \
+  && go get -u github.com/uma-co82/Shupple-api/src/api \
   && apt-get update -qq \
   && apt-get install -y mariadb-client vim
 

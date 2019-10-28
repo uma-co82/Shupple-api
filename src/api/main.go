@@ -5,6 +5,7 @@ import (
 	"github.com/bamzi/jobrunner"
 	"github.com/uma-co82/Shupple-api/src/api/db"
 	"github.com/uma-co82/Shupple-api/src/api/server"
+	"github.com/uma-co82/Shupple-api/src/api/task"
 )
 
 func main() {
@@ -21,4 +22,5 @@ type Myjob struct {
 
 func (e Myjob) Run() {
 	fmt.Println("hogehoge")
+	task.UserCombinationCheckCreatedAtTask()
 }
