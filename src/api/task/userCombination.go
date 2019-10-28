@@ -9,6 +9,7 @@ import (
 )
 
 func UserCombinationCheckCreatedAtTask() {
+	fmt.Println("開始＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊")
 	db := db.Init()
 	tx := db.Begin()
 	defer db.Close()

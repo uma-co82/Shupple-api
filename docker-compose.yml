@@ -8,9 +8,9 @@ services:
       dockerfile: ./docker/api/Dockerfile
     ports:
       - "8080:8080"
-#    volumes:
-#      - ./src/api:/go/src/api
-#      - ./src/api:/api
+    volumes:
+      - ./src/api:/go/src/api
+      - ./src/api:/api
     env_file: ./docker/api/.env
   mysql:
     build: ./docker/db
