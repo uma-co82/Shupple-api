@@ -2,3 +2,4 @@ log/
 .env
 .idea/encodings.xml
 log/mysql/mysqld.log
+log/mysql/mysqld.log
