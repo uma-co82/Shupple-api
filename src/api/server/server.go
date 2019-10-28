@@ -13,6 +13,7 @@ func Init() {
 
 func router() *gin.Engine {
 	r := gin.Default()
+	//gin.SetMode(gin.ReleaseMode)
 
 	/**
 	 * ヘルスチェクに対するレスポンス
