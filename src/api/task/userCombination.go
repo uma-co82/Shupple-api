@@ -30,7 +30,7 @@ func UserCombinationCheckCreatedAtTask() {
 
 	defer file.Close()
 
-	if err := tx.Where("created_at + INTERVAL ? HOUR > ?", endTargetHours, now).Find(&userCombinations).Error; err != nil {
+	if err := tx.Where("created_at + INTERVAL ? HOUR < ?", endTargetHours, now).Find(&userCombinations).Error; err != nil {
 		tx.Rollback()
 		return
 	}
