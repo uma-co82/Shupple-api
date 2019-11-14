@@ -9,8 +9,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./src/api:/go/src/api
-      - ./src/api:/api
+      - ./src/api:/go/src/github.com/uma-co82/Shupple-api/src/api
     env_file: ./docker/api/.env
   mysql:
     build: ./docker/db
