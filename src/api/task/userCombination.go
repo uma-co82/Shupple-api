@@ -2,7 +2,7 @@ package task
 
 import (
 	"fmt"
-	"github.com/uma-co82/Shupple-api/src/api/domain/structs"
+	"github.com/uma-co82/Shupple-api/src/api/domain/user"
 	"github.com/uma-co82/Shupple-api/src/api/infrastructure/db"
 	"os"
 	"time"
@@ -15,7 +15,7 @@ func UserCombinationCheckCreatedAtTask() {
 	defer db.Close()
 
 	var (
-		userCombinations []structs.UserCombination
+		userCombinations []user.UserCombination
 		targetUserIds    []string
 		updateTarget     = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
 	)

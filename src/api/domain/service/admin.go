@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/uma-co82/Shupple-api/src/api/domain"
+	"github.com/uma-co82/Shupple-api/src/api/domain/user"
 	"github.com/uma-co82/Shupple-api/src/api/infrastructure/db"
 )
 
@@ -17,7 +18,7 @@ type PASS struct {
 /**
  * User一覧
  */
-func (s UserService) GetAllUser(c *gin.Context) ([]User, error) {
+func (s UserService) GetAllUser(c *gin.Context) ([]user.User, error) {
 	uid := c.Request.Header.Get("Uid")
 
 	var env PASS
@@ -31,7 +32,7 @@ func (s UserService) GetAllUser(c *gin.Context) ([]User, error) {
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		users []User
+		users []user.User
 	)
 
 	if err := tx.Find(&users).Error; err != nil {

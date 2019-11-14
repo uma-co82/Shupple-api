@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/uma-co82/Shupple-api/src/api/domain"
 	"github.com/uma-co82/Shupple-api/src/api/domain/service"
 )
 
@@ -15,7 +16,7 @@ func (userController UserController) Shupple(c *gin.Context) {
 	p, err := userService.GetOpponent(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -29,7 +30,7 @@ func (userController UserController) CancelOpponent(c *gin.Context) {
 	p, err := userService.CancelOpponent(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -43,7 +44,7 @@ func (userController UserController) CreateUser(c *gin.Context) {
 	p, err := userService.CreateUser(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -57,7 +58,7 @@ func (userController UserController) UpdateUser(c *gin.Context) {
 	p, err := userService.UpdateUser(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -71,7 +72,7 @@ func (userController UserController) IsRegisteredUser(c *gin.Context) {
 	p, err := userService.IsRegisterdUser(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -86,7 +87,7 @@ func (userController UserController) IsMatchedUser(c *gin.Context) {
 	p, err := userService.IsMatchedUser(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -100,7 +101,7 @@ func (userController UserController) GetUser(c *gin.Context) {
 	p, err := userService.GetUser(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}
@@ -114,7 +115,7 @@ func (userController UserController) SoftDeleteUser(c *gin.Context) {
 	err := userService.SoftDeleteUser(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, "ok")
 	}
@@ -128,7 +129,7 @@ func (userController UserController) UnauthorizedUser(c *gin.Context) {
 	err := userService.CreateUnauthorizedUser(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, "ok")
 	}
@@ -142,7 +143,7 @@ func (userController UserController) CreateCompatible(c *gin.Context) {
 	p, err := userService.CreateCompatible(c)
 
 	if err != nil {
-		c.JSON(err.(*service.Error).Code, err)
+		c.JSON(err.(*domain.Error).Code, err)
 	} else {
 		c.JSON(200, p)
 	}

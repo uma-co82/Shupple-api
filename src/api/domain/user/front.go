@@ -51,13 +51,3 @@ type IsMatched struct {
 	IsMatched bool  `json:"is_matched"`
 	User      *User `json:"user,omitempty"`
 }
-
-/**
- * エラーが発生した場合にフロントへ返却するError構造体
- */
-type Error struct {
-	Code              int      `json:"code"`
-	Message           string   `json:"message"`
-	ValidationMessage []string `json:"validationMessage"`
-	FrontMessage      string   `json:"frontMessage"`
-}

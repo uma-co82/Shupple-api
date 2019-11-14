@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/uma-co82/Shupple-api/src/api/domain"
 )
 
 type (
@@ -48,9 +49,9 @@ func (s S3Service) UploadToS3(image string, uid string) error {
 	if err != nil {
 		fmt.Println(res)
 		if err, ok := err.(awserr.Error); ok && err.Code() == request.CanceledErrorCode {
-			return RaiseError(400, "Upload TimuOut", nil)
+			return domain.RaiseError(400, "Upload TimuOut", nil)
 		} else {
-			return RaiseError(400, "Upload Failed", nil)
+			return domain.RaiseError(400, "Upload Failed", nil)
 		}
 	}
 
