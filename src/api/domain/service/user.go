@@ -82,13 +82,13 @@ func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 			return isMatched, err
 		}
 		// TODO: ポインタを引数にしてUserInformationを直接詰めたい。。
+		// MEMO: ポインタを引数に渡すとgormに怒られる...
 		var err2 error
 		opponent.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(opponent)
 		if err2 != nil {
 			return isMatched, err2
 		}
 		// TODO: ここも同じ！(メソッド使えば行けるかも!)
-		// MEMO: ポインタを引数に渡すとgormに怒られる
 		var err3 error
 		opponent.UserCombination, err3 = userRepository.GetUserCombinationByBothUid(person.UID, opponent.UID)
 		if err3 != nil {
