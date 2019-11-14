@@ -10,6 +10,9 @@ type UserRepository interface {
 	GetByUid(string) (user.User, error)
 	GetUserInformationByRelatedUser(user.User) (user.UserInformation, error)
 	GetUserCombinationByBothUid(string, string) (user.UserCombination, error)
+	GetShupple(int, int, int, int, string) ([]user.User, error)
+	Update(user.User, user.User) error
+	CreateUserCombination(user.UserCombination) error
 }
 
 type userRepository struct {
@@ -44,4 +47,29 @@ func (u *userRepository) GetUserCombinationByBothUid(personUid, opponentUid stri
 		return userCombination, domain.RaiseDBError()
 	}
 	return userCombination, nil
+}
+
+// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
+func (u *userRepository) GetShupple(ageLow, ageUpper, sex, residence int, uid string) ([]user.User, error) {
+	var candidateUsers []user.User
+	if err := u.conn.Where(
+		"age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid=?) AND uid IN (select uid from user_informations where residence=?)",
+		ageLow, ageUpper, sex, false, uid, residence).Find(&candidateUsers).Error; err != nil {
+		return candidateUsers, domain.RaiseDBError()
+	}
+	return candidateUsers, nil
+}
+
+func (u *userRepository) Update(before user.User, after user.User) error {
+	if err := u.conn.Model(&before).Updates(&after).Error; err != nil {
+		return domain.RaiseDBError()
+	}
+	return nil
+}
+
+func (u *userRepository) CreateUserCombination(userCombination user.UserCombination) error {
+	if err := u.conn.Create(&userCombination).Error; err != nil {
+		return domain.RaiseDBError()
+	}
+	return nil
 }
