@@ -20,11 +20,8 @@
 ### 2. Pull Repository
 `git clone git@github.com:uma-co82/Shupple-api.git`
 
-### 3. Docker-compose build
-`docker-compose build`
-
-### 4. Docker-compose up
-`docker-compose up`
+### 3. Docker-compose up
+`docker-compose up -d`
 
 ## AWS EC2 Settings
 [reference](http://kitakitabauer.hatenablog.com/entry/2017/10/17/215316)
