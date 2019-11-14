@@ -64,6 +64,9 @@ func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 	defer db.Close()
 	var (
 		isMatched user.IsMatched
+		// TODO: これはやばい。。
+		err2 error
+		err3 error
 	)
 
 	uid := c.Request.Header.Get("uid")
@@ -83,13 +86,11 @@ func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 		}
 		// TODO: ポインタを引数にしてUserInformationを直接詰めたい。。
 		// MEMO: ポインタを引数に渡すとgormに怒られる...
-		var err2 error
 		opponent.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(opponent)
 		if err2 != nil {
 			return isMatched, err2
 		}
 		// TODO: ここも同じ！(メソッド使えば行けるかも!)
-		var err3 error
 		opponent.UserCombination, err3 = userRepository.GetUserCombinationByBothUid(person.UID, opponent.UID)
 		if err3 != nil {
 			return isMatched, err3
@@ -113,52 +114,63 @@ func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
  */
 func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
 	db := db.Init()
-	tx := db.Begin()
 	defer db.Close()
 	var (
 		candidateUsers []user.User
-		person         user.User
 		opponent       user.User
 		uComb          user.UserCombination
+		err2           error
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
-		tx.Rollback()
+	tx := db.Begin()
+	userRepository := repository.NewUserRepository(tx)
+	person, err := userRepository.GetByUid(uid)
+	if err != nil {
 		return opponent, domain.RaiseDBError()
 	}
 
-	// Userが既にマッチング済みの場合、userCombinationを含めて返す(フロントで時間が必要な為)
+	// 当事者(person)が既にマッチング済みの場合、userCombinationを含めて返す(フロントで時間が必要な為)
 	if person.IsCombination == true {
-		if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
-			tx.Rollback()
-			return opponent, domain.RaiseDBError()
+		opponent, err := userRepository.GetByUid(person.OpponentUid)
+		if err != nil {
+			return opponent, err
 		}
-		if err := tx.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
-			tx.Rollback()
-			return opponent, domain.RaiseDBError()
+		// TODO: ポインタを引数にしてUserInformationを直接詰めたい。。
+		// MEMO: ポインタを引数に渡すとgormに怒られる...
+		opponent.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(opponent)
+		if err2 != nil {
+			return opponent, err2
 		}
-		if err := tx.Where("uid IN (?, ?) AND opponent_uid IN (?, ?)", uid, opponent.UID, uid, opponent.UID).First(&opponent.UserCombination).Error; err != nil {
-			tx.Rollback()
-			return opponent, domain.RaiseDBError()
+		// TODO: ここも同じ！(メソッド使えば行けるかも!)
+		opponent.UserCombination, err2 = userRepository.GetUserCombinationByBothUid(person.UID, opponent.UID)
+		if err2 != nil {
+			return opponent, err2
 		}
 		return opponent, nil
 	}
 
-	if err := tx.Model(&person).Related(&person.UserInformation, "UserInformation").Error; err != nil {
-		tx.Rollback()
-		return opponent, domain.RaiseDBError()
+	// 当事者のUserInformationを取得
+	person.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(person)
+	if err2 != nil {
+		return opponent, err2
 	}
 
+	// 相手の性別をゲット
 	opponentSex := person.OpponentSex()
 
 	// 条件に合うユーザを検索
 	// 条件にあうかつ、UserCombinationのOpponentUIDにないと言う条件で絞る
 	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
-	if err := tx.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid=?) AND uid IN (select uid from user_informations where residence=?)", person.UserInformation.OpponentAgeLow, person.UserInformation.OpponentAgeUpper, opponentSex, false, uid, person.UserInformation.OpponentResidence).Find(&candidateUsers).Error; err != nil {
-		tx.Rollback()
-		return opponent, domain.RaiseDBError()
+	candidateUsers, err2 = userRepository.GetShupple(
+		person.UserInformation.OpponentAgeLow,
+		person.UserInformation.OpponentAgeUpper,
+		opponentSex,
+		person.UserInformation.OpponentResidence, uid,
+	)
+	if err2 != nil {
+		return opponent, err2
 	}
 
 	if len(candidateUsers) == 0 {
@@ -173,29 +185,32 @@ func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
 	userAfter.OpponentUid = opponent.UID
 	userAfter.IsCombination = true
 
-	if err := tx.Model(&opponent).Update(&opponentAfter).Error; err != nil {
+	if err := userRepository.Update(opponent, opponentAfter); err != nil {
 		tx.Rollback()
-		return opponent, domain.RaiseDBError()
-	}
-	if err := tx.Model(&person).Update(&userAfter).Error; err != nil {
-		tx.Rollback()
-		return opponent, domain.RaiseDBError()
+		return opponent, err
 	}
 
-	if err := tx.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
+	if err := userRepository.Update(person, userAfter); err != nil {
 		tx.Rollback()
-		return opponent, domain.RaiseDBError()
+		return opponent, err
+	}
+
+	opponent.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(opponent)
+	if err2 != nil {
+		return opponent, err2
 	}
 
 	uComb.SetUserCombination(person.UID, opponent.UID)
-	if err := tx.Create(&uComb).Error; err != nil {
+	if err := userRepository.CreateUserCombination(uComb); err != nil {
 		tx.Rollback()
-		return opponent, domain.RaiseDBError()
+		return opponent, err
 	}
 
+	// MEMO: CreatedAtとか時間系がレスポンスに入って無いけど良いんだっけ？？
 	opponent.UserCombination = user.UserCombination(uComb)
+	tx.Commit()
 
-	return opponent, tx.Commit().Error
+	return opponent, nil
 }
 
 /**
@@ -252,8 +267,10 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 		return person, err
 	}
 
-	if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
-		return person, err
+	if postUser.Image != "" {
+		if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
+			return person, err
+		}
 	}
 
 	if err := postUser.CheckPostUserValidate(); err != nil {
