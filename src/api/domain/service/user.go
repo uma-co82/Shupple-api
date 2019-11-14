@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/uma-co82/Shupple-api/src/api/domain/repository"
 	"math/rand"
 	"time"
 
@@ -28,28 +29,30 @@ func getRandUser(u []user.User) user.User {
 
 /**
  * UIDからユーザーが登録済みかを判定する
- * TODO: RecordNotFound以外のエラーハンドリング
  */
-func (s UserService) IsRegisterdUser(c *gin.Context) (user.IsRegistered, error) {
+func (s UserService) IsRegisteredUser(c *gin.Context) (user.IsRegistered, error) {
 	db := db.Init()
-	tx := db.Begin()
 	defer db.Close()
 	var (
-		person       user.User
 		isRegistered user.IsRegistered
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if tx.First(&person, "uid=?", uid).RecordNotFound() {
+	// Transaction
+	tx := db.Begin()
+	userRepository := repository.NewUserRepository(tx)
+	_, err := userRepository.GetByUid(uid)
+	if err != nil {
 		tx.Rollback()
 		isRegistered.IsRegistered = false
 		return isRegistered, nil
 	}
+	tx.Commit()
 
 	isRegistered.IsRegistered = true
 
-	return isRegistered, tx.Commit().Error
+	return isRegistered, nil
 }
 
 /**
@@ -58,24 +61,23 @@ func (s UserService) IsRegisterdUser(c *gin.Context) (user.IsRegistered, error) 
  */
 func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 	db := db.Init()
-	tx := db.Begin()
 	defer db.Close()
 	var (
-		person    user.User
-		opponent  user.User
 		isMatched user.IsMatched
 	)
 
 	uid := c.Request.Header.Get("uid")
 
-	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
-		tx.Rollback()
+	tx := db.Begin()
+	userRepository := repository.NewUserRepository(tx)
+	person, err := userRepository.GetByUid(uid)
+	if err != nil {
 		return isMatched, domain.RaiseDBError()
 	}
 
 	if person.IsCombination == true {
-		if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
-			tx.Rollback()
+		opponent, err := userRepository.GetByUid(person.OpponentUid)
+		if err != nil {
 			return isMatched, domain.RaiseDBError()
 		}
 		if err := tx.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
