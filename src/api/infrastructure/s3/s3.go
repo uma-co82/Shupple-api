@@ -47,7 +47,6 @@ func (s S3Service) UploadToS3(image string, uid string) error {
 	})
 
 	if err != nil {
-		fmt.Println(res)
 		if err, ok := err.(awserr.Error); ok && err.Code() == request.CanceledErrorCode {
 			return domain.RaiseError(400, "Upload TimuOut", nil)
 		} else {
