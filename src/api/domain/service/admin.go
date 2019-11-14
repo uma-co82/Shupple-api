@@ -3,7 +3,8 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/uma-co82/Shupple-api/src/api/db"
+	"github.com/uma-co82/Shupple-api/src/api/domain"
+	"github.com/uma-co82/Shupple-api/src/api/infrastructure/db"
 )
 
 /************************************************************
@@ -23,7 +24,7 @@ func (s UserService) GetAllUser(c *gin.Context) ([]User, error) {
 	_ = envconfig.Process("", &env)
 
 	if uid != env.ADMIN {
-		return nil, RaiseError(403, "Forbidden", nil)
+		return nil, domain.RaiseError(403, "Forbidden", nil)
 	}
 
 	db := db.Init()
@@ -35,7 +36,7 @@ func (s UserService) GetAllUser(c *gin.Context) ([]User, error) {
 
 	if err := tx.Find(&users).Error; err != nil {
 		tx.Rollback()
-		return nil, RaiseDBError()
+		return nil, domain.RaiseDBError()
 	}
 
 	return users, nil
