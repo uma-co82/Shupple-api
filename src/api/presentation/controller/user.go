@@ -69,7 +69,7 @@ func (userController UserController) UpdateUser(c *gin.Context) {
  */
 func (userController UserController) IsRegisteredUser(c *gin.Context) {
 	var userService service.UserService
-	p, err := userService.IsRegisterdUser(c)
+	p, err := userService.IsRegisteredUser(c)
 
 	if err != nil {
 		c.JSON(err.(*domain.Error).Code, err)
