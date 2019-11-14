@@ -64,9 +64,6 @@ func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 	defer db.Close()
 	var (
 		isMatched user.IsMatched
-		// TODO: これはやばい。。
-		err2 error
-		err3 error
 	)
 
 	uid := c.Request.Header.Get("uid")
@@ -86,14 +83,14 @@ func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 		}
 		// TODO: ポインタを引数にしてUserInformationを直接詰めたい。。
 		// MEMO: ポインタを引数に渡すとgormに怒られる...
-		opponent.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(opponent)
-		if err2 != nil {
-			return isMatched, err2
+		opponent.UserInformation, err = userRepository.GetUserInformationByRelatedUser(opponent)
+		if err != nil {
+			return isMatched, err
 		}
 		// TODO: ここも同じ！(メソッド使えば行けるかも!)
-		opponent.UserCombination, err3 = userRepository.GetUserCombinationByBothUid(person.UID, opponent.UID)
-		if err3 != nil {
-			return isMatched, err3
+		opponent.UserCombination, err = userRepository.GetUserCombinationByBothUid(person.UID, opponent.UID)
+		if err != nil {
+			return isMatched, err
 		}
 
 		isMatched.IsMatched = true
@@ -119,7 +116,6 @@ func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
 		candidateUsers []user.User
 		opponent       user.User
 		uComb          user.UserCombination
-		err2           error
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -139,22 +135,22 @@ func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
 		}
 		// TODO: ポインタを引数にしてUserInformationを直接詰めたい。。
 		// MEMO: ポインタを引数に渡すとgormに怒られる...
-		opponent.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(opponent)
-		if err2 != nil {
-			return opponent, err2
+		opponent.UserInformation, err = userRepository.GetUserInformationByRelatedUser(opponent)
+		if err != nil {
+			return opponent, err
 		}
 		// TODO: ここも同じ！(メソッド使えば行けるかも!)
-		opponent.UserCombination, err2 = userRepository.GetUserCombinationByBothUid(person.UID, opponent.UID)
-		if err2 != nil {
-			return opponent, err2
+		opponent.UserCombination, err = userRepository.GetUserCombinationByBothUid(person.UID, opponent.UID)
+		if err != nil {
+			return opponent, err
 		}
 		return opponent, nil
 	}
 
 	// 当事者のUserInformationを取得
-	person.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(person)
-	if err2 != nil {
-		return opponent, err2
+	person.UserInformation, err = userRepository.GetUserInformationByRelatedUser(person)
+	if err != nil {
+		return opponent, err
 	}
 
 	// 相手の性別をゲット
@@ -163,14 +159,14 @@ func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
 	// 条件に合うユーザを検索
 	// 条件にあうかつ、UserCombinationのOpponentUIDにないと言う条件で絞る
 	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
-	candidateUsers, err2 = userRepository.GetShupple(
+	candidateUsers, err = userRepository.GetShupple(
 		person.UserInformation.OpponentAgeLow,
 		person.UserInformation.OpponentAgeUpper,
 		opponentSex,
 		person.UserInformation.OpponentResidence, uid,
 	)
-	if err2 != nil {
-		return opponent, err2
+	if err != nil {
+		return opponent, err
 	}
 
 	if len(candidateUsers) == 0 {
@@ -195,9 +191,9 @@ func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
 		return opponent, err
 	}
 
-	opponent.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(opponent)
-	if err2 != nil {
-		return opponent, err2
+	opponent.UserInformation, err = userRepository.GetUserInformationByRelatedUser(opponent)
+	if err != nil {
+		return opponent, err
 	}
 
 	uComb.SetUserCombination(person.UID, opponent.UID)
@@ -253,19 +249,38 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 
 /**
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
+ * TODO: チャネルがinterface{}で微妙。。
  */
 func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
 	defer db.Close()
+
 	var (
 		postUser  user.PostUser
 		person    user.User
 		s3Service s3.S3Service
+		errChan   = make(chan interface{}, 1)
 	)
 
 	// TODO: Bind出来なかった時のエラーハンドリング
 	if err := c.BindJSON(&postUser); err != nil {
 		return person, err
+	}
+
+	// 並行処理でs3へアップロード
+	// エラーがあった場合はerrChanに流す
+	if postUser.Image != "" {
+		person.ImageURL = postUser.UID + ".png"
+		go func() {
+			if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
+				// エラーが起きた場合にチャネルに流す
+				errChan <- err
+			} else {
+				errChan <- "noError"
+			}
+		}()
+	} else {
+		errChan <- "noError"
 	}
 
 	// Transaction
@@ -278,24 +293,23 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 
 	person.SetUserFromPost(postUser)
 
-	if postUser.Image != "" {
-		person.ImageURL = postUser.UID + ".png"
-		if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
-			return person, err
-		}
-	}
-
 	err := person.CalcAge(postUser.BirthDay)
 	if err != nil {
 		return person, err
 	}
 
-	//if err := tx.Create(&person).Error; err != nil {
-	//	tx.Rollback()
-	//	return person, domain.RaiseDBError()
-	//}
+	if err := userRepository.CreateUser(person); err != nil {
+		return person, err
+	}
+	tx.Commit()
+	// Transaction
 
-	return person, tx.Commit().Error
+	if err := <-errChan; err != "noError" {
+		return person, err.(error)
+	}
+	defer close(errChan)
+
+	return person, nil
 }
 
 /**
@@ -303,7 +317,6 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
  */
 func (s UserService) GetUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
-	tx := db.Begin()
 	defer db.Close()
 	var (
 		person user.User
@@ -311,17 +324,15 @@ func (s UserService) GetUser(c *gin.Context) (user.User, error) {
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
-		tx.Rollback()
-		return person, domain.RaiseDBError()
+	userRepository := repository.NewUserRepository(db)
+	person, err := userRepository.GetByUid(uid)
+	if err != nil {
+		return person, err
 	}
 
-	if err := tx.Model(&person).Related(&person.UserInformation, "UserInformation").Error; err != nil {
-		tx.Rollback()
-		return person, domain.RaiseDBError()
-	}
+	person.UserInformation, err = userRepository.GetUserInformationByRelatedUser(person)
 
-	return person, tx.Commit().Error
+	return person, nil
 }
 
 /**
@@ -330,13 +341,13 @@ func (s UserService) GetUser(c *gin.Context) (user.User, error) {
  */
 func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
-	tx := db.Begin()
 	defer db.Close()
 	var (
 		putUser    user.PutUser
 		userBefore user.User
 		userAfter  user.User
 		s3Service  s3.S3Service
+		errChan    = make(chan interface{}, 1)
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -344,20 +355,35 @@ func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 	if err := c.BindJSON(&putUser); err != nil {
 		return userAfter, err
 	}
+
+	if putUser.Image != "" {
+		go func() {
+			if err := s3Service.UploadToS3(putUser.Image, uid); err != nil {
+				errChan <- err
+			} else {
+				errChan <- "noError"
+			}
+		}()
+	} else {
+		errChan <- "noError"
+	}
+
+	// Transaction
+	tx := db.Begin()
+	userRepository := repository.NewUserRepository(tx)
+
 	if err := putUser.CheckPutUserValidate(); err != nil {
 		return userAfter, err
 	}
 
+	userAfter.SetUserFromPut(putUser)
+
+	personBefore, err := userRepository.GetByUid(uid)
 	if err := tx.First(&userAfter, "uid=?", uid).Error; err != nil {
 		tx.Rollback()
 		return userAfter, domain.RaiseDBError()
 	}
 
-	if err := s3Service.UploadToS3(putUser.Image, uid); err != nil {
-		return userAfter, err
-	}
-
-	userAfter.SetUserFromPut(putUser)
 	if err := tx.Model(&userBefore).Update(&userAfter).Error; err != nil {
 		tx.Rollback()
 		return userAfter, domain.RaiseDBError()
