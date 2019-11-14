@@ -218,35 +218,37 @@ func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
  */
 func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 	db := db.Init()
-	tx := db.Begin()
 	defer db.Close()
-	var (
-		person       user.User
-		opponent     user.User
-		updateTarget = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
-	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
-		tx.Rollback()
-		return false, domain.RaiseDBError()
-	}
-	if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
-		tx.Rollback()
-		return false, domain.RaiseDBError()
+	// Transaction
+	tx := db.Begin()
+	userRepository := repository.NewUserRepository(tx)
+
+	person, err := userRepository.GetByUid(uid)
+	if err != nil {
+		return false, err
 	}
 
-	if err := tx.Model(&person).Updates(updateTarget).Error; err != nil {
-		tx.Rollback()
-		return false, domain.RaiseDBError()
-	}
-	if err := tx.Model(&opponent).Updates(updateTarget).Error; err != nil {
-		tx.Rollback()
-		return false, domain.RaiseDBError()
+	opponent, err := userRepository.GetByUid(person.OpponentUid)
+	if err != nil {
+		return false, err
 	}
 
-	return true, tx.Commit().Error
+	if err := userRepository.CancelMatchingStatus(person); err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := userRepository.CancelMatchingStatus(opponent); err != nil {
+		tx.Rollback()
+		return false, err
+	}
+	tx.Commit()
+	// Transaction
+
+	return true, nil
 }
 
 /**
@@ -254,7 +256,6 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
  */
 func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
-	tx := db.Begin()
 	defer db.Close()
 	var (
 		postUser  user.PostUser
@@ -267,27 +268,32 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 		return person, err
 	}
 
-	if postUser.Image != "" {
-		if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
-			return person, err
-		}
-	}
+	// Transaction
+	tx := db.Begin()
+	userRepository := repository.NewUserRepository(tx)
 
 	if err := postUser.CheckPostUserValidate(); err != nil {
 		return person, err
 	}
 
 	person.SetUserFromPost(postUser)
-	person.ImageURL = postUser.UID + ".png"
+
+	if postUser.Image != "" {
+		person.ImageURL = postUser.UID + ".png"
+		if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
+			return person, err
+		}
+	}
+
 	err := person.CalcAge(postUser.BirthDay)
 	if err != nil {
 		return person, err
 	}
 
-	if err := tx.Create(&person).Error; err != nil {
-		tx.Rollback()
-		return person, domain.RaiseDBError()
-	}
+	//if err := tx.Create(&person).Error; err != nil {
+	//	tx.Rollback()
+	//	return person, domain.RaiseDBError()
+	//}
 
 	return person, tx.Commit().Error
 }
