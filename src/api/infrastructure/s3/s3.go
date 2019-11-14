@@ -3,7 +3,6 @@ package s3
 import (
 	"bytes"
 	"encoding/base64"
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -39,7 +38,7 @@ func (s S3Service) UploadToS3(image string, uid string) error {
 	wb := new(bytes.Buffer)
 	wb.Write(data)
 
-	res, err := uploader.Upload(&s3manager.UploadInput{
+	_, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket:      aws.String("shupple-user-images"),
 		Key:         aws.String("images/" + uid + ".png"),
 		Body:        wb,

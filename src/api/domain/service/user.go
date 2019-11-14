@@ -343,17 +343,16 @@ func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
 	defer db.Close()
 	var (
-		putUser    user.PutUser
-		userBefore user.User
-		userAfter  user.User
-		s3Service  s3.S3Service
-		errChan    = make(chan interface{}, 1)
+		putUser     user.PutUser
+		afterPerson user.User
+		s3Service   s3.S3Service
+		errChan     = make(chan interface{}, 1)
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
 	if err := c.BindJSON(&putUser); err != nil {
-		return userAfter, err
+		return afterPerson, err
 	}
 
 	if putUser.Image != "" {
@@ -373,23 +372,29 @@ func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 	userRepository := repository.NewUserRepository(tx)
 
 	if err := putUser.CheckPutUserValidate(); err != nil {
-		return userAfter, err
+		return afterPerson, err
 	}
 
-	userAfter.SetUserFromPut(putUser)
+	afterPerson.SetUserFromPut(putUser)
 
-	personBefore, err := userRepository.GetByUid(uid)
-	if err := tx.First(&userAfter, "uid=?", uid).Error; err != nil {
-		tx.Rollback()
-		return userAfter, domain.RaiseDBError()
+	beforePerson, err := userRepository.GetByUid(uid)
+	if err != nil {
+		return afterPerson, err
 	}
 
-	if err := tx.Model(&userBefore).Update(&userAfter).Error; err != nil {
-		tx.Rollback()
-		return userAfter, domain.RaiseDBError()
+	if err := userRepository.Update(beforePerson, afterPerson); err != nil {
+		return afterPerson, err
 	}
 
-	return userBefore, tx.Commit().Error
+	if err := <-errChan; err != "noError" {
+		return afterPerson, err.(error)
+	}
+	defer close(errChan)
+
+	tx.Commit()
+	// Transaction
+
+	return beforePerson, nil
 }
 
 func (s UserService) SoftDeleteUser(c *gin.Context) error {
