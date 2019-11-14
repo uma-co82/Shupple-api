@@ -2,8 +2,8 @@ package task
 
 import (
 	"fmt"
-	"github.com/uma-co82/Shupple-api/src/api/db"
-	"github.com/uma-co82/Shupple-api/src/api/structs"
+	"github.com/uma-co82/Shupple-api/src/api/domain/structs"
+	"github.com/uma-co82/Shupple-api/src/api/infrastructure/db"
 	"os"
 	"time"
 )

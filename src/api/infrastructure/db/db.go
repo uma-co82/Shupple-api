@@ -4,7 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/uma-co82/Shupple-api/src/api/structs"
+	"github.com/uma-co82/Shupple-api/src/api/domain/user"
 )
 
 var (
@@ -37,9 +37,9 @@ func Init() *gorm.DB {
 }
 
 func AutoMigration() {
-	db.AutoMigrate(&structs.User{})
-	db.AutoMigrate(&structs.UserInformation{})
-	db.AutoMigrate(&structs.UserCombination{})
-	db.AutoMigrate(&structs.InfoCompatible{})
-	db.AutoMigrate(&structs.UnauthorizedUser{})
+	db.AutoMigrate(&user.User{})
+	db.AutoMigrate(&user.UserInformation{})
+	db.AutoMigrate(&user.UserCombination{})
+	db.AutoMigrate(&user.InfoCompatible{})
+	db.AutoMigrate(&user.UnauthorizedUser{})
 }

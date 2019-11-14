@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/carlescere/scheduler"
-	"github.com/uma-co82/Shupple-api/src/api/db"
-	"github.com/uma-co82/Shupple-api/src/api/server"
+	"github.com/uma-co82/Shupple-api/src/api/infrastructure/db"
+	"github.com/uma-co82/Shupple-api/src/api/infrastructure/server"
 	"github.com/uma-co82/Shupple-api/src/api/task"
 )
 

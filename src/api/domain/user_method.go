@@ -1,7 +1,7 @@
-package service
+package domain
 
 import (
-	"github.com/uma-co82/Shupple-api/src/api/structs"
+	"github.com/uma-co82/Shupple-api/src/api/domain/structs"
 	"gopkg.in/go-playground/validator.v9"
 	"strconv"
 	"time"

@@ -3,7 +3,7 @@ package server
 import (
 	//"../controller"
 	"github.com/gin-gonic/gin"
-	"github.com/uma-co82/Shupple-api/src/api/controller"
+	"github.com/uma-co82/Shupple-api/src/api/presentation/controller"
 )
 
 func Init() {

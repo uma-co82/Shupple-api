@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/uma-co82/Shupple-api/src/api/service"
+	"github.com/uma-co82/Shupple-api/src/api/domain/service"
 )
 
 type AdminController struct{}

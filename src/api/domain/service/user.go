@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/uma-co82/Shupple-api/src/api/db"
-	"github.com/uma-co82/Shupple-api/src/api/structs"
+	"github.com/uma-co82/Shupple-api/src/api/domain/structs"
+	"github.com/uma-co82/Shupple-api/src/api/infrastructure/db"
 )
 
 type (
