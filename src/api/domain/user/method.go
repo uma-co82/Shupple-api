@@ -1,7 +1,7 @@
-package domain
+package user
 
 import (
-	"github.com/uma-co82/Shupple-api/src/api/domain/structs"
+	"github.com/uma-co82/Shupple-api/src/api/domain"
 	"gopkg.in/go-playground/validator.v9"
 	"strconv"
 	"time"
@@ -55,7 +55,7 @@ func (user *User) setUserFromPost(postUser PostUser) {
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
 	user.BirthDay = postUser.BirthDay
-	user.UserInformation = structs.UserInformation{UID: postUser.UID,
+	user.UserInformation = UserInformation{UID: postUser.UID,
 		OpponentAgeLow:    postUser.OpponentAgeLow,
 		OpponentAgeUpper:  postUser.OpponentAgeUpper,
 		OpponentResidence: postUser.OpponentResidence,
@@ -64,7 +64,7 @@ func (user *User) setUserFromPost(postUser PostUser) {
 		Job:               postUser.Job, Personality: postUser.Personality}
 }
 func (user *User) setUserFromPut(putUser PutUser) {
-	var uInfo structs.UserInformation
+	var uInfo UserInformation
 	user.NickName = putUser.NickName
 	uInfo.OpponentAgeLow = putUser.OpponentAgeLow
 	uInfo.OpponentAgeUpper = putUser.OpponentAgeUpper
@@ -141,7 +141,7 @@ func (postUser *PostUser) checkPostUserValidate() error {
 			}
 			errMsges = append(errMsges, errMsg)
 		}
-		return RaiseError(400, "validation failed", errMsges)
+		return domain.RaiseError(400, "validation failed", errMsges)
 	}
 
 	return nil
@@ -168,7 +168,7 @@ func (putUser *PutUser) checkPutUserValidate() error {
 			}
 			errMsges = append(errMsges, errMsg)
 		}
-		return RaiseError(400, "validation failed", errMsges)
+		return domain.RaiseError(400, "validation failed", errMsges)
 	}
 
 	return nil
