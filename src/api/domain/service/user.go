@@ -44,11 +44,11 @@ func (s UserService) IsRegisteredUser(c *gin.Context) (user.IsRegistered, error)
 	userRepository := repository.NewUserRepository(tx)
 	_, err := userRepository.GetByUid(uid)
 	if err != nil {
-		tx.Rollback()
 		isRegistered.IsRegistered = false
 		return isRegistered, nil
 	}
 	tx.Commit()
+	// Transaction
 
 	isRegistered.IsRegistered = true
 
@@ -68,6 +68,7 @@ func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 
 	uid := c.Request.Header.Get("uid")
 
+	// Transaction
 	tx := db.Begin()
 	userRepository := repository.NewUserRepository(tx)
 	person, err := userRepository.GetByUid(uid)
@@ -78,25 +79,32 @@ func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 	if person.IsCombination == true {
 		opponent, err := userRepository.GetByUid(person.OpponentUid)
 		if err != nil {
-			return isMatched, domain.RaiseDBError()
+			return isMatched, err
 		}
-		if err := tx.Model(&opponent).Related(&opponent.UserInformation, "UserInformation").Error; err != nil {
-			tx.Rollback()
-			return isMatched, domain.RaiseDBError()
+		// TODO: ポインタを引数にしてUserInformationを直接詰めたい。。
+		var err2 error
+		opponent.UserInformation, err2 = userRepository.GetUserInformationByRelatedUser(opponent)
+		if err2 != nil {
+			return isMatched, err2
 		}
+		// TODO: ここも同じ！(メソッド使えば行けるかも!)
+		// MEMO: ポインタを引数に渡すとgormに怒られる
+		var err3 error
+		opponent.UserCombination, err3 = userRepository.GetUserCombinationByBothUid(person.UID, opponent.UID)
+		if err3 != nil {
+			return isMatched, err3
+		}
+
 		isMatched.IsMatched = true
-		tmp := user.User(opponent)
-		if err := tx.Where("uid IN (?, ?) AND opponent_uid IN (?, ?)", uid, opponent.UID, uid, opponent.UID).First(&tmp.UserCombination).Error; err != nil {
-			tx.Rollback()
-			return isMatched, domain.RaiseDBError()
-		}
-		isMatched.User = &tmp
+		isMatched.User = &opponent
 		return isMatched, nil
 	}
+	tx.Commit()
+	// Transaction
 
 	isMatched.IsMatched = false
 	isMatched.User = nil
-	return isMatched, tx.Commit().Error
+	return isMatched, nil
 }
 
 /**
