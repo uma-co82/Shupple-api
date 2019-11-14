@@ -12,7 +12,7 @@ import (
  * 1 - 男性
  * 2 - 女性
  */
-func (user *User) opponentSex() int {
+func (user *User) OpponentSex() int {
 	switch user.Sex {
 	case 1:
 		return 2
@@ -26,7 +26,7 @@ func (user *User) opponentSex() int {
 /*
  * 引数にとったTimeから年齢を算出
  */
-func (user *User) calcAge(birthDay time.Time) error {
+func (user *User) CalcAge(birthDay time.Time) error {
 	dateFormatOnlyNumber := "20060102"
 
 	now := time.Now().Format(dateFormatOnlyNumber)
@@ -50,7 +50,7 @@ func (user *User) calcAge(birthDay time.Time) error {
 /*
  * Userの詰め替え
  */
-func (user *User) setUserFromPost(postUser PostUser) {
+func (user *User) SetUserFromPost(postUser PostUser) {
 	user.UID = postUser.UID
 	user.NickName = postUser.NickName
 	user.Sex = postUser.Sex
@@ -63,7 +63,7 @@ func (user *User) setUserFromPost(postUser PostUser) {
 		Residence:         postUser.Residence,
 		Job:               postUser.Job, Personality: postUser.Personality}
 }
-func (user *User) setUserFromPut(putUser PutUser) {
+func (user *User) SetUserFromPut(putUser PutUser) {
 	var uInfo UserInformation
 	user.NickName = putUser.NickName
 	uInfo.OpponentAgeLow = putUser.OpponentAgeLow
@@ -79,7 +79,7 @@ func (user *User) setUserFromPut(putUser PutUser) {
 /*
  * UserCombinationの詰め替え
  */
-func (uCombi *UserCombination) setUserCombination(uid, opponentUid string) {
+func (uCombi *UserCombination) SetUserCombination(uid, opponentUid string) {
 	uCombi.UID = uid
 	uCombi.OpponentUID = opponentUid
 }
@@ -87,7 +87,7 @@ func (uCombi *UserCombination) setUserCombination(uid, opponentUid string) {
 /*
  * InfoCompatibleの詰め替え
  */
-func (infoCompatible *InfoCompatible) setInfoCompatible(infoID, otherID string) {
+func (infoCompatible *InfoCompatible) SetInfoCompatible(infoID, otherID string) {
 	infoCompatible.InfoID = infoID
 	infoCompatible.OtherID = otherID
 }
@@ -96,7 +96,7 @@ func (infoCompatible *InfoCompatible) setInfoCompatible(infoID, otherID string) 
  * PostUserのvalidationチェック
  * エラーがあった場合はError構造体を返す
  */
-func (postUser *PostUser) checkPostUserValidate() error {
+func (postUser *PostUser) CheckPostUserValidate() error {
 	validate := validator.New()
 	var errMsges []string
 
@@ -151,7 +151,7 @@ func (postUser *PostUser) checkPostUserValidate() error {
  * PostUserのvalidationチェック
  * エラーがあった場合はError構造体を返す
  */
-func (putUser *PutUser) checkPutUserValidate() error {
+func (putUser *PutUser) CheckPutUserValidate() error {
 	validate := validator.New()
 	var errMsges []string
 
