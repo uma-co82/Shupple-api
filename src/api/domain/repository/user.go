@@ -8,6 +8,7 @@ import (
 
 type UserRepository interface {
 	GetByUid(uid string) (*user.User, error)
+	GetUserInformationByRelatedUser(*user.User) error
 }
 
 type userRepository struct {
@@ -26,4 +27,11 @@ func (u *userRepository) GetByUid(uid string) (*user.User, error) {
 		return &person, domain.RaiseDBError()
 	}
 	return &person, nil
+}
+
+func (u *userRepository) GetUserInformationByRelatedUser(person *user.User) error {
+	if err := u.conn.Model(person).Related(person.UserInformation, "UserInformation").Error; err != nil {
+		return domain.RaiseDBError()
+	}
+	return nil
 }
