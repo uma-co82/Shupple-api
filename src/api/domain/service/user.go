@@ -8,49 +8,40 @@ import (
 	"github.com/uma-co82/Shupple-api/src/api/domain"
 	"github.com/uma-co82/Shupple-api/src/api/domain/user"
 	"github.com/uma-co82/Shupple-api/src/api/infrastructure/db"
+	"github.com/uma-co82/Shupple-api/src/api/infrastructure/s3"
 )
 
 type (
-	UserService      struct{}
-	User             user.User
-	UserInformation  user.UserInformation
-	UserCombination  user.UserCombination
-	InfoCompatible   user.InfoCompatible
-	Error            user.Error
-	PostUser         user.PostUser
-	PutUser          user.PutUser
-	IsRegistered     user.IsRegistered
-	IsMatched        user.IsMatched
-	UnauthorizedUser user.UnauthorizedUser
+	UserService struct{}
 )
 
 /**
  * 引数の[]Userからランダムに1件取得
  */
-func getRandUser(u []User) User {
-	var user User
+func getRandUser(u []user.User) user.User {
+	var person user.User
 	rand.Seed(time.Now().UnixNano())
 	i := rand.Intn(len(u))
-	user = u[i]
-	return user
+	person = u[i]
+	return person
 }
 
 /**
  * UIDからユーザーが登録済みかを判定する
  * TODO: RecordNotFound以外のエラーハンドリング
  */
-func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
+func (s UserService) IsRegisterdUser(c *gin.Context) (user.IsRegistered, error) {
 	db := db.Init()
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		user         User
-		isRegistered IsRegistered
+		person       user.User
+		isRegistered user.IsRegistered
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if tx.First(&user, "uid=?", uid).RecordNotFound() {
+	if tx.First(&person, "uid=?", uid).RecordNotFound() {
 		tx.Rollback()
 		isRegistered.IsRegistered = false
 		return isRegistered, nil
@@ -65,25 +56,25 @@ func (s UserService) IsRegisterdUser(c *gin.Context) (IsRegistered, error) {
  * UIDからマッチング済みかを判定する
  * マッチング済みの場合、マッチング相手を返す
  */
-func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
+func (s UserService) IsMatchedUser(c *gin.Context) (user.IsMatched, error) {
 	db := db.Init()
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		user      User
-		opponent  User
-		isMatched IsMatched
+		person    user.User
+		opponent  user.User
+		isMatched user.IsMatched
 	)
 
 	uid := c.Request.Header.Get("uid")
 
-	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
 		tx.Rollback()
 		return isMatched, domain.RaiseDBError()
 	}
 
-	if user.IsCombination == true {
-		if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+	if person.IsCombination == true {
+		if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
 			tx.Rollback()
 			return isMatched, domain.RaiseDBError()
 		}
@@ -110,27 +101,27 @@ func (s UserService) IsMatchedUser(c *gin.Context) (IsMatched, error) {
  * 異性かつ希望の年齢層のUserをランダムに1件返す
  * マッチング済みの場合はマッチング相手を返す
  */
-func (s UserService) GetOpponent(c *gin.Context) (User, error) {
+func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
 	db := db.Init()
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		candidateUsers []User
-		user           User
-		opponent       User
-		uComb          UserCombination
+		candidateUsers []user.User
+		person         user.User
+		opponent       user.User
+		uComb          user.UserCombination
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
 		tx.Rollback()
 		return opponent, domain.RaiseDBError()
 	}
 
 	// Userが既にマッチング済みの場合、userCombinationを含めて返す(フロントで時間が必要な為)
-	if user.IsCombination == true {
-		if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+	if person.IsCombination == true {
+		if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
 			tx.Rollback()
 			return opponent, domain.RaiseDBError()
 		}
@@ -145,17 +136,17 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		return opponent, nil
 	}
 
-	if err := tx.Model(&user).Related(&user.UserInformation, "UserInformation").Error; err != nil {
+	if err := tx.Model(&person).Related(&person.UserInformation, "UserInformation").Error; err != nil {
 		tx.Rollback()
 		return opponent, domain.RaiseDBError()
 	}
 
-	opponentSex := user.opponentSex()
+	opponentSex := person.OpponentSex()
 
 	// 条件に合うユーザを検索
 	// 条件にあうかつ、UserCombinationのOpponentUIDにないと言う条件で絞る
 	// select * from users where age BETWEEN 20 AND 30 AND sex=1 AND is_combination=false AND uid NOT IN (select opponent_uid from user_combinations where uid='自分のuid')
-	if err := tx.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid=?) AND uid IN (select uid from user_informations where residence=?)", user.UserInformation.OpponentAgeLow, user.UserInformation.OpponentAgeUpper, opponentSex, false, uid, user.UserInformation.OpponentResidence).Find(&candidateUsers).Error; err != nil {
+	if err := tx.Where("age BETWEEN ? AND ? AND sex=? AND is_combination=? AND uid NOT IN (select opponent_uid from user_combinations where uid=?) AND uid IN (select uid from user_informations where residence=?)", person.UserInformation.OpponentAgeLow, person.UserInformation.OpponentAgeUpper, opponentSex, false, uid, person.UserInformation.OpponentResidence).Find(&candidateUsers).Error; err != nil {
 		tx.Rollback()
 		return opponent, domain.RaiseDBError()
 	}
@@ -167,8 +158,8 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 	opponent = getRandUser(candidateUsers)
 	opponentAfter := opponent
 	opponentAfter.IsCombination = true
-	opponentAfter.OpponentUid = user.UID
-	userAfter := user
+	opponentAfter.OpponentUid = person.UID
+	userAfter := person
 	userAfter.OpponentUid = opponent.UID
 	userAfter.IsCombination = true
 
@@ -176,7 +167,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		tx.Rollback()
 		return opponent, domain.RaiseDBError()
 	}
-	if err := tx.Model(&user).Update(&userAfter).Error; err != nil {
+	if err := tx.Model(&person).Update(&userAfter).Error; err != nil {
 		tx.Rollback()
 		return opponent, domain.RaiseDBError()
 	}
@@ -186,7 +177,7 @@ func (s UserService) GetOpponent(c *gin.Context) (User, error) {
 		return opponent, domain.RaiseDBError()
 	}
 
-	uComb.setUserCombination(user.UID, opponent.UID)
+	uComb.SetUserCombination(person.UID, opponent.UID)
 	if err := tx.Create(&uComb).Error; err != nil {
 		tx.Rollback()
 		return opponent, domain.RaiseDBError()
@@ -205,23 +196,23 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		user         User
-		opponent     User
+		person       user.User
+		opponent     user.User
 		updateTarget = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
 		tx.Rollback()
 		return false, domain.RaiseDBError()
 	}
-	if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+	if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
 		tx.Rollback()
 		return false, domain.RaiseDBError()
 	}
 
-	if err := tx.Model(&user).Updates(updateTarget).Error; err != nil {
+	if err := tx.Model(&person).Updates(updateTarget).Error; err != nil {
 		tx.Rollback()
 		return false, domain.RaiseDBError()
 	}
@@ -236,83 +227,83 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 /**
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
  */
-func (s UserService) CreateUser(c *gin.Context) (User, error) {
+func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		postUser  PostUser
-		user      User
-		s3Service S3Service
+		postUser  user.PostUser
+		person    user.User
+		s3Service s3.S3Service
 	)
 
 	// TODO: Bind出来なかった時のエラーハンドリング
 	if err := c.BindJSON(&postUser); err != nil {
-		return user, err
+		return person, err
 	}
 
 	if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
-		return user, err
+		return person, err
 	}
 
-	if err := postUser.checkPostUserValidate(); err != nil {
-		return user, err
+	if err := postUser.CheckPostUserValidate(); err != nil {
+		return person, err
 	}
 
-	user.setUserFromPost(postUser)
-	user.ImageURL = postUser.UID + ".png"
-	err := user.calcAge(postUser.BirthDay)
+	person.SetUserFromPost(postUser)
+	person.ImageURL = postUser.UID + ".png"
+	err := person.CalcAge(postUser.BirthDay)
 	if err != nil {
-		return user, err
+		return person, err
 	}
 
-	if err := tx.Create(&user).Error; err != nil {
+	if err := tx.Create(&person).Error; err != nil {
 		tx.Rollback()
-		return user, domain.RaiseDBError()
+		return person, domain.RaiseDBError()
 	}
 
-	return user, tx.Commit().Error
+	return person, tx.Commit().Error
 }
 
 /**
  * UIDでユーザーを検索する
  */
-func (s UserService) GetUser(c *gin.Context) (User, error) {
+func (s UserService) GetUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		user User
+		person user.User
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
 		tx.Rollback()
-		return user, domain.RaiseDBError()
+		return person, domain.RaiseDBError()
 	}
 
-	if err := tx.Model(&user).Related(&user.UserInformation, "UserInformation").Error; err != nil {
+	if err := tx.Model(&person).Related(&person.UserInformation, "UserInformation").Error; err != nil {
 		tx.Rollback()
-		return user, domain.RaiseDBError()
+		return person, domain.RaiseDBError()
 	}
 
-	return user, tx.Commit().Error
+	return person, tx.Commit().Error
 }
 
 /**
  * User情報の更新
  * TODO: 飛んできたプロパティーだけ更新したい。。
  */
-func (s UserService) UpdateUser(c *gin.Context) (User, error) {
+func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		putUser    PutUser
-		userBefore User
-		userAfter  User
-		s3Service  S3Service
+		putUser    user.PutUser
+		userBefore user.User
+		userAfter  user.User
+		s3Service  s3.S3Service
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -320,20 +311,20 @@ func (s UserService) UpdateUser(c *gin.Context) (User, error) {
 	if err := c.BindJSON(&putUser); err != nil {
 		return userAfter, err
 	}
-	if err := putUser.checkPutUserValidate(); err != nil {
+	if err := putUser.CheckPutUserValidate(); err != nil {
 		return userAfter, err
 	}
 
 	if err := tx.First(&userAfter, "uid=?", uid).Error; err != nil {
 		tx.Rollback()
-		return userAfter, RaiseDBError()
+		return userAfter, domain.RaiseDBError()
 	}
 
 	if err := s3Service.UploadToS3(putUser.Image, uid); err != nil {
 		return userAfter, err
 	}
 
-	userAfter.setUserFromPut(putUser)
+	userAfter.SetUserFromPut(putUser)
 	if err := tx.Model(&userBefore).Update(&userAfter).Error; err != nil {
 		tx.Rollback()
 		return userAfter, domain.RaiseDBError()
@@ -347,19 +338,19 @@ func (s UserService) SoftDeleteUser(c *gin.Context) error {
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		user User
+		person user.User
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
 		tx.Rollback()
 		return domain.RaiseDBError()
 	}
 
-	if user.IsCombination == true {
-		var opponent User
-		if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+	if person.IsCombination == true {
+		var opponent user.User
+		if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
 			tx.Rollback()
 			return domain.RaiseDBError()
 		}
@@ -369,7 +360,7 @@ func (s UserService) SoftDeleteUser(c *gin.Context) error {
 		}
 	}
 
-	if err := tx.Delete(&user).Error; err != nil {
+	if err := tx.Delete(&person).Error; err != nil {
 		tx.Rollback()
 		return domain.RaiseDBError()
 	}
@@ -390,25 +381,25 @@ func (s UserService) CreateUnauthorizedUser(c *gin.Context) error {
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		user            User
-		opponent        User
-		unauthorizedUid UnauthorizedUser
+		person          user.User
+		opponent        user.User
+		unauthorizedUid user.UnauthorizedUser
 		updateTarget    = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&user, "uid=?", uid).Error; err != nil {
+	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
 		tx.Rollback()
 		return domain.RaiseDBError()
 	}
 
-	if err := tx.First(&opponent, "uid=?", user.OpponentUid).Error; err != nil {
+	if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
 		tx.Rollback()
 		return domain.RaiseDBError()
 	}
 
-	if err := tx.Model(&user).Updates(updateTarget).Error; err != nil {
+	if err := tx.Model(&person).Updates(updateTarget).Error; err != nil {
 		tx.Rollback()
 		return domain.RaiseDBError()
 	}
@@ -441,15 +432,15 @@ func (s UserService) CreateUnauthorizedUser(c *gin.Context) error {
  * n通以上メッセージのやり取りがあった場合に相性が良い組み合わせと考え
  * UserCompatibleに保存する
  */
-func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
+func (s UserService) CreateCompatible(c *gin.Context) (user.InfoCompatible, error) {
 	db := db.Init()
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		infoCompatible InfoCompatible
-		uComb          UserCombination
-		uInfo          UserInformation
-		otherUinfo     UserInformation
+		infoCompatible user.InfoCompatible
+		uComb          user.UserCombination
+		uInfo          user.UserInformation
+		otherUinfo     user.UserInformation
 	)
 
 	if err := c.BindJSON(&uComb); err != nil {
@@ -465,7 +456,7 @@ func (s UserService) CreateCompatible(c *gin.Context) (InfoCompatible, error) {
 		return infoCompatible, domain.RaiseDBError()
 	}
 
-	infoCompatible.setInfoCompatible(uInfo.UID, otherUinfo.UID)
+	infoCompatible.SetInfoCompatible(uInfo.UID, otherUinfo.UID)
 
 	if err := tx.Create(&infoCompatible).Error; err != nil {
 		tx.Rollback()
