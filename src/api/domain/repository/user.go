@@ -13,6 +13,8 @@ type UserRepository interface {
 	GetShupple(int, int, int, int, string) ([]user.User, error)
 	Update(user.User, user.User) error
 	CreateUserCombination(user.UserCombination) error
+	CancelMatchingStatus(user.User) error
+	CreateUser(user.User) error
 }
 
 type userRepository struct {
@@ -69,6 +71,22 @@ func (u *userRepository) Update(before user.User, after user.User) error {
 
 func (u *userRepository) CreateUserCombination(userCombination user.UserCombination) error {
 	if err := u.conn.Create(&userCombination).Error; err != nil {
+		return domain.RaiseDBError()
+	}
+	return nil
+}
+
+func (u *userRepository) CancelMatchingStatus(person user.User) error {
+	var updateTarget = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
+
+	if err := u.conn.Model(&person).Updates(updateTarget).Error; err != nil {
+		return domain.RaiseDBError()
+	}
+	return nil
+}
+
+func (u *userRepository) CreateUser(person user.User) error {
+	if err := u.conn.Create(&person).Error; err != nil {
 		return domain.RaiseDBError()
 	}
 	return nil
