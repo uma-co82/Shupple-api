@@ -318,9 +318,6 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 func (s UserService) GetUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
 	defer db.Close()
-	var (
-		person user.User
-	)
 
 	uid := c.Request.Header.Get("Uid")
 
@@ -399,40 +396,38 @@ func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 
 func (s UserService) SoftDeleteUser(c *gin.Context) error {
 	db := db.Init()
-	tx := db.Begin()
 	defer db.Close()
-	var (
-		person user.User
-	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
-		tx.Rollback()
-		return domain.RaiseDBError()
+	// Transaction
+	tx := db.Begin()
+	userRepository := repository.NewUserRepository(db)
+	person, err := userRepository.GetByUid(uid)
+	if err != nil {
+		return err
 	}
 
 	if person.IsCombination == true {
-		var opponent user.User
-		if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
-			tx.Rollback()
-			return domain.RaiseDBError()
+		opponent, err := userRepository.GetByUid(person.OpponentUid)
+		if err != nil {
+			return err
 		}
-		if err := db.Model(&opponent).Update(map[string]interface{}{"is_combination": false, "opponent_uid": nil}).Error; err != nil {
+
+		err = userRepository.CancelMatchingStatus(opponent)
+		if err != nil {
 			tx.Rollback()
-			return domain.RaiseDBError()
+			return err
 		}
 	}
 
-	if err := tx.Delete(&person).Error; err != nil {
+	err = userRepository.SoftDeleteUser(person)
+	if err != nil {
 		tx.Rollback()
-		return domain.RaiseDBError()
+		return err
 	}
-
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return domain.RaiseDBError()
-	}
+	tx.Commit()
+	// Transaction
 
 	return nil
 }
@@ -445,31 +440,32 @@ func (s UserService) CreateUnauthorizedUser(c *gin.Context) error {
 	tx := db.Begin()
 	defer db.Close()
 	var (
-		person          user.User
-		opponent        user.User
 		unauthorizedUid user.UnauthorizedUser
 		updateTarget    = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
 	)
 
 	uid := c.Request.Header.Get("Uid")
 
-	if err := tx.First(&person, "uid=?", uid).Error; err != nil {
-		tx.Rollback()
-		return domain.RaiseDBError()
+	// Transaction
+	userRepository := repository.NewUserRepository(db)
+	person, err := userRepository.GetByUid(uid)
+	if err != nil {
+		return err
 	}
 
-	if err := tx.First(&opponent, "uid=?", person.OpponentUid).Error; err != nil {
-		tx.Rollback()
-		return domain.RaiseDBError()
+	opponent, err := userRepository.GetByUid(person.OpponentUid)
+	if err != nil {
+		return err
 	}
 
-	if err := tx.Model(&person).Updates(updateTarget).Error; err != nil {
+	if err = userRepository.CancelMatchingStatus(person); err != nil {
 		tx.Rollback()
-		return domain.RaiseDBError()
+		return err
 	}
-	if err := tx.Model(&opponent).Updates(updateTarget).Error; err != nil {
+
+	if err = userRepository.CancelMatchingStatus(opponent); err != nil {
 		tx.Rollback()
-		return domain.RaiseDBError()
+		return err
 	}
 
 	unauthorizedUid.UID = opponent.UID
@@ -479,15 +475,13 @@ func (s UserService) CreateUnauthorizedUser(c *gin.Context) error {
 		unauthorizedUid.Block = false
 	}
 
-	if err := tx.Create(&unauthorizedUid).Error; err != nil {
+	if err := userRepository.CreateUnAuthorizeUser(&unauthorizedUid); err != nil {
 		tx.Rollback()
-		return domain.RaiseDBError()
+		return err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return domain.RaiseDBError()
-	}
+	tx.Commit()
+	// Transaction
 
 	return nil
 }
