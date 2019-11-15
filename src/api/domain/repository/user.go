@@ -15,6 +15,8 @@ type UserRepository interface {
 	CreateUserCombination(user.UserCombination) error
 	CancelMatchingStatus(user.User) error
 	CreateUser(user.User) error
+	SoftDeleteUser(user.User) error
+	CreateUnAuthorizeUser(user.UnauthorizedUser) error
 }
 
 type userRepository struct {
@@ -87,6 +89,20 @@ func (u *userRepository) CancelMatchingStatus(person user.User) error {
 
 func (u *userRepository) CreateUser(person user.User) error {
 	if err := u.conn.Create(&person).Error; err != nil {
+		return domain.RaiseDBError()
+	}
+	return nil
+}
+
+func (u *userRepository) SoftDeleteUser(person user.User) error {
+	if err := u.conn.Delete(&person).Error; err != nil {
+		return domain.RaiseDBError()
+	}
+	return nil
+}
+
+func (u *userRepository) CreateUnAuthorizeUser(unauthorizedUser user.UnauthorizedUser) error {
+	if err := u.conn.Create(&unauthorizedUser).Error; err != nil {
 		return domain.RaiseDBError()
 	}
 	return nil
