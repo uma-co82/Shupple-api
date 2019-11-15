@@ -441,7 +441,6 @@ func (s UserService) CreateUnauthorizedUser(c *gin.Context) error {
 	defer db.Close()
 	var (
 		unauthorizedUid user.UnauthorizedUser
-		updateTarget    = map[string]interface{}{"is_combination": false, "opponent_uid": nil}
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -475,7 +474,7 @@ func (s UserService) CreateUnauthorizedUser(c *gin.Context) error {
 		unauthorizedUid.Block = false
 	}
 
-	if err := userRepository.CreateUnAuthorizeUser(&unauthorizedUid); err != nil {
+	if err := userRepository.CreateUnAuthorizeUser(unauthorizedUid); err != nil {
 		tx.Rollback()
 		return err
 	}
