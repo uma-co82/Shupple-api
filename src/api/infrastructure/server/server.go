@@ -36,7 +36,6 @@ func router() *gin.Engine {
 		uGroup.GET("/isMatched", ctrl.IsMatchedUser)
 		uGroup.GET("/select", ctrl.GetUser)
 		uGroup.POST("/unauthorized", ctrl.UnauthorizedUser)
-		uGroup.POST("/compatible", ctrl.CreateCompatible)
 	}
 
 	aGroup := r.Group("/admin")

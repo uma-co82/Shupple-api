@@ -134,17 +134,3 @@ func (userController UserController) UnauthorizedUser(c *gin.Context) {
 		c.JSON(200, "ok")
 	}
 }
-
-/**
- * 相性が良い条件の組み合わせを保存
- */
-func (userController UserController) CreateCompatible(c *gin.Context) {
-	var userService service.UserService
-	p, err := userService.CreateCompatible(c)
-
-	if err != nil {
-		c.JSON(err.(*domain.Error).Code, err)
-	} else {
-		c.JSON(200, p)
-	}
-}
