@@ -128,6 +128,7 @@ func (s UserService) GetOpponent(c *gin.Context) (user.User, error) {
 	}
 
 	// 当事者(person)が既にマッチング済みの場合、userCombinationを含めて返す(フロントで時間が必要な為)
+	// TODO: domainに切り出そう
 	if person.IsCombination == true {
 		opponent, err := userRepository.GetByUid(person.OpponentUid)
 		if err != nil {
@@ -249,7 +250,6 @@ func (s UserService) CancelOpponent(c *gin.Context) (bool, error) {
 
 /**
  * POSTされたjsonを元にUser, UserInformation, UserCombinationを作成
- * TODO: チャネルがinterface{}で微妙。。
  */
 func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 	db := db.Init()
@@ -259,7 +259,7 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 		postUser  user.PostUser
 		person    user.User
 		s3Service s3.S3Service
-		errChan   = make(chan interface{}, 1)
+		errChan   = make(chan error, 1)
 	)
 
 	// TODO: Bind出来なかった時のエラーハンドリング
@@ -272,15 +272,11 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 	if postUser.Image != "" {
 		person.ImageURL = postUser.UID + ".png"
 		go func() {
-			if err := s3Service.UploadToS3(postUser.Image, postUser.UID); err != nil {
-				// エラーが起きた場合にチャネルに流す
-				errChan <- err
-			} else {
-				errChan <- "noError"
-			}
+			err := s3Service.UploadToS3(postUser.Image, postUser.UID)
+			errChan <- err
 		}()
 	} else {
-		errChan <- "noError"
+		errChan <- nil
 	}
 
 	// Transaction
@@ -304,7 +300,7 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 	tx.Commit()
 	// Transaction
 
-	if err := <-errChan; err != "noError" {
+	if err := <-errChan; err != nil {
 		return person, err.(error)
 	}
 	defer close(errChan)
