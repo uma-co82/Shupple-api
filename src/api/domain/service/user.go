@@ -339,7 +339,7 @@ func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 		putUser     user.PutUser
 		afterPerson user.User
 		s3Service   s3.S3Service
-		errChan     = make(chan interface{}, 1)
+		errChan     = make(chan error, 1)
 	)
 
 	uid := c.Request.Header.Get("Uid")
@@ -350,14 +350,11 @@ func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 
 	if putUser.Image != "" {
 		go func() {
-			if err := s3Service.UploadToS3(putUser.Image, uid); err != nil {
-				errChan <- err
-			} else {
-				errChan <- "noError"
-			}
+			err := s3Service.UploadToS3(putUser.Image, uid)
+			errChan <- err
 		}()
 	} else {
-		errChan <- "noError"
+		errChan <- nil
 	}
 
 	// Transaction
@@ -379,13 +376,13 @@ func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 		return afterPerson, err
 	}
 
-	if err := <-errChan; err != "noError" {
+	tx.Commit()
+	// Transaction
+
+	if err := <-errChan; err != nil {
 		return afterPerson, err.(error)
 	}
 	defer close(errChan)
-
-	tx.Commit()
-	// Transaction
 
 	return beforePerson, nil
 }
