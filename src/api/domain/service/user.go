@@ -269,6 +269,7 @@ func (s UserService) CreateUser(c *gin.Context) (user.User, error) {
 
 	// 並行処理でs3へアップロード
 	// エラーがあった場合はerrChanに流す
+	// TODO: goroutineをキル出来てない(doneチャネル作って)
 	if postUser.Image != "" {
 		person.ImageURL = postUser.UID + ".png"
 		go func() {
@@ -348,6 +349,7 @@ func (s UserService) UpdateUser(c *gin.Context) (user.User, error) {
 		return afterPerson, err
 	}
 
+	// TODO: goroutineをキル出来てない(doneチャネル作って)
 	if putUser.Image != "" {
 		go func() {
 			err := s3Service.UploadToS3(putUser.Image, uid)
